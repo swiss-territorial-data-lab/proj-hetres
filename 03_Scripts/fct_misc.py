@@ -4,9 +4,11 @@ import os
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import mapping
+from shapely.geometry import shape
 
 import rasterio
 from rasterio.mask import mask
+from rasterio.features import shapes
 
 import numpy as np
 
@@ -188,3 +190,22 @@ def test_valid_geom(poly_gdf, correct=False, gdf_obj_name=None):
     print(f"There aren't any invalid geometries{f' among the {gdf_obj_name}' if gdf_obj_name else ''}.")
 
     return poly_gdf
+
+
+def polygonize_binary_raster(path):
+    '''
+    Get a binary raster and return a dataframe of the zones equal to 1.
+
+    -path: path to the binary raster.
+    return: a dataframe of the pixels equal to 1 aggregated into polygons.
+    '''
+
+    with rasterio.open(path) as src:
+        image=src.read(1)
+
+        mask= image==1
+        geoms = ((shape(s), v) for s, v in shapes(image, mask, transform=src.transform))
+        gdf=gpd.GeoDataFrame(geoms, columns=['geometry', 'class'])
+        gdf.set_crs(crs=src.crs, inplace=True)
+
+    return gdf
