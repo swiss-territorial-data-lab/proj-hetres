@@ -3,8 +3,8 @@ import os
 
 import geopandas as gpd
 import pandas as pd
-from shapely.geometry import mapping
-from shapely.geometry import shape
+from shapely.geometry import mapping, shape
+from shapely.affinity import scale
 
 import rasterio
 from rasterio.mask import mask
@@ -209,3 +209,38 @@ def polygonize_binary_raster(path):
         gdf.set_crs(crs=src.crs, inplace=True)
 
     return gdf
+
+def clip_labels(labels_gdf, tiles_gdf, fact=0.99):
+    '''
+    Clip the labels to the tiles
+    Copied from the misc functions of the object detector 
+    cf. https://github.com/swiss-territorial-data-lab/object-detector/blob/master/helpers/misc.py
+
+    - labels_gdf: geodataframe with the labels
+    - tiles_gdf: geodataframe of the tiles
+    - fact: factor to scale the tiles before clipping
+    return: a geodataframe with the labels clipped to the tiles
+    '''
+
+    tiles_gdf['tile_geometry'] = tiles_gdf['geometry']
+        
+    assert(labels_gdf.crs == tiles_gdf.crs)
+    
+    labels_tiles_sjoined_gdf = gpd.sjoin(labels_gdf, tiles_gdf, how='inner', predicate='intersects')
+    
+    def clip_row(row, fact=fact):
+        
+        old_geo = row.geometry
+        scaled_tile_geo = scale(row.tile_geometry, xfact=fact, yfact=fact)
+        new_geo = old_geo.intersection(scaled_tile_geo)
+        row['geometry'] = new_geo
+
+        return row
+
+    clipped_labels_gdf = labels_tiles_sjoined_gdf.apply(lambda row: clip_row(row, fact), axis=1)
+    clipped_labels_gdf.crs = labels_gdf.crs
+
+    clipped_labels_gdf.drop(columns=['tile_geometry', 'index_right'], inplace=True)
+    clipped_labels_gdf.rename(columns={'id': 'tile_id'}, inplace=True)
+
+    return clipped_labels_gdf

@@ -6,3 +6,4 @@ pip-tools
 plotly
 scikit-learn
 rasterio
+rasterstats
