@@ -1,0 +1,66 @@
+input_files:
+  detections:
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_94_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_91_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_85_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_84_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_58_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_54_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_53_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_45_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_36_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_27_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/ID_18_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/dissID_46_47_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/dissID_28_29_73_74_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/dissID_9_12_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/dissID_6_7_8_87_88_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/dissID_0_1_5_6_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/dissID_93_13_mTH_2_peaks.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/2p0mTHdH0p5/dissID_79_83_mTH_2_peaks.shp
+  gt_sectors:
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_94.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_91.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_85.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_84.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_58.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_54.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_53.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_45.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_36.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_27.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_18.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_46_47.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_28_29_73_74.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_9_12.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_6_7_8_87_88.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_0_1_5_6.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_93_13.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_79_83.gpkg
+  gt_trees:
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+output_files:
+  metrics: C:/Users/cmarmy/Documents/STDL/Beeches/treedet-toolkit-main/data/GPKG/2p0mTHdH0p5_mTH_2_peaks_metrics.csv
+  tagged_detections: C:/Users/cmarmy/Documents/STDL/Beeches/treedet-toolkit-main/data/GPKG/2p0mTHdH0p5_mTH_2_peaks_det_charges.gpkg
+  tagged_gt_trees: C:/Users/cmarmy/Documents/STDL/Beeches/treedet-toolkit-main/data/GPKG/2p0mTHdH0p5_mTH_2_peaks_GT_charges.gpkg
+settings:
+  crs_dft: epsg:2056
+  gt_sectors_buffer_size_in_meters: 2
+  tolerance_in_meters: 2

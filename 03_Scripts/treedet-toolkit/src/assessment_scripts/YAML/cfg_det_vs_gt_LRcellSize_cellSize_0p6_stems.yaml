@@ -1,0 +1,66 @@
+input_files:
+  detections:
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_94_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_91_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_85_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_84_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_58_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_54_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_53_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_45_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_36_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_27_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/ID_18_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/dissID_46_47_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/dissID_28_29_73_74_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/dissID_9_12_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/dissID_6_7_8_87_88_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/dissID_0_1_5_6_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/dissID_93_13_searchRadius_1p5_stems.shp
+  - C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/output/LRsearchRadius/dissID_79_83_searchRadius_1p5_stems.shp
+  gt_sectors:
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_94.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_91.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_85.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_84.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_58.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_54.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_53.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_45.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_36.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_27.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\ID_18.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_46_47.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_28_29_73_74.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_9_12.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_6_7_8_87_88.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_0_1_5_6.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_93_13.gpkg
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\AOI\dissID_79_83.gpkg
+  gt_trees:
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+  - C:\Users\cmarmy\Documents\STDL\Beeches\GT\GT_Z_beechesAOI_corr_attribute.shp
+output_files:
+  metrics: C:/Users/cmarmy/Documents/STDL/Beeches/treedet-toolkit-main/data/GPKG/LRsearchRadius_searchRadius_1p5_stems_metrics.csv
+  tagged_detections: C:/Users/cmarmy/Documents/STDL/Beeches/treedet-toolkit-main/data/GPKG/LRsearchRadius_searchRadius_1p5_stems_det_charges.gpkg
+  tagged_gt_trees: C:/Users/cmarmy/Documents/STDL/Beeches/treedet-toolkit-main/data/GPKG/LRsearchRadius_searchRadius_1p5_stems_GT_charges.gpkg
+settings:
+  crs_dft: epsg:2056
+  gt_sectors_buffer_size_in_meters: 2
+  tolerance_in_meters: 2

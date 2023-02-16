@@ -1,0 +1,16 @@
+input_files: # input files must be readable by GeoPandas
+  run_A_detections: # paths to one or more files output by run A
+    - <path to file 1>
+    - <path to file 2>
+    - <...>
+  run_B_detections: # paths to one or more files output by run B
+    - <path to file 3>
+    - <path to file 4>
+    - <...>
+output_files: # each run's detections are split into two distinct files
+  matched_run_A_detections: <path to file 5.gpkg>
+  matched_run_B_detections: <path to file 6.gpkg>
+  unmatched_run_A_detections: <path to file 7.gpkg>
+  unmatched_run_B_detections: <path to file 8.gpkg>
+settings:
+  tolerance_in_meters: 1.0 # this tolerance is split in half between run A and run B detections 
