@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<title>Potree Viewer</title>
+
+	<link rel="stylesheet" type="text/css" href="../../potree/build/potree/potree.css">
+	<link rel="stylesheet" type="text/css" href="../../potree/libs/jquery-ui/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="../../potree/libs/openlayers3/ol.css">
+	<link rel="stylesheet" type="text/css" href="../../potree/libs/spectrum/spectrum.css">
+	<link rel="stylesheet" type="text/css" href="../../potree/libs/jstree/themes/mixed/style.css">
+</head>
+
+<body>
+	<script src="../../potree/libs/jquery/jquery-3.1.1.min.js"></script>
+	<script src="../../potree/libs/spectrum/spectrum.js"></script>
+	<script src="../../potree/libs/jquery-ui/jquery-ui.min.js"></script>
+	<script src="../../potree/libs/other/BinaryHeap.js"></script>
+	<script src="../../potree/libs/tween/tween.min.js"></script>
+	<script src="../../potree/libs/d3/d3.js"></script>
+	<script src="../../potree/libs/proj4/proj4.js"></script>
+	<script src="../../potree/libs/openlayers3/ol.js"></script>
+	<script src="../../potree/libs/i18next/i18next.js"></script>
+	<script src="../../potree/libs/jstree/jstree.js"></script>
+	<script src="../../potree/build/potree/potree.js"></script>
+	<script src="../../potree/libs/plasio/js/laslaz.js"></script>
+	<script src="../../potree/libs/shapefile/shapefile.js"></script>
+
+	
+	<!-- INCLUDE ADDITIONAL DEPENDENCIES HERE -->
+	<!-- INCLUDE SETTINGS HERE -->
+	
+	<div class="potree_container" style="position: absolute; width: 100%; height: 100%; left: 0px; top: 0px; ">
+		<div id="potree_render_area" style="background-image: url('../../potree/build/potree/resources/images/background.jpg');"></div>
+		<div id="potree_sidebar_container"> </div>
+	</div>
+	
+	
+	
+	<script type="module">
+	
+		import * as THREE from "../../potree/libs/three.js/build/three.module.js";
+
+		window.viewer = new Potree.Viewer(document.getElementById("potree_render_area"));
+		
+		viewer.setEDLEnabled(true);
+		viewer.setFOV(60);
+		viewer.setPointBudget(3_000_000); // set budget points à l'ouverture
+		viewer.loadSettingsFromURL();
+		viewer.setBackground("skybox");
+		
+		viewer.setDescription("Acquisitions LiDAR du 16.08.2022");
+		
+		viewer.loadGUI(() => {
+			viewer.setLanguage('en');
+			$("#menu_tools").next().show();
+			$("#menu_clipping").next().show(); // how to have menu open at start
+			$("#menu_scene").next().show();
+			viewer.toggleSidebar();
+		});
+		
+		
+		
+		// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/0p5mTHdH0p1_mTH_10_seg_converted/metadata.json", "0p5_dH0p1_mTH10", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+		
+		
+		// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/2p0mTHdH0p3_mTH_10_seg_converted/metadata.json", "2p0_dH0p3_mTH10", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+		
+				// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/0p5mTHfun3_mTH_10_seg_converted/metadata.json", "0p5_fun3_mTH10", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+		
+				// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/2p0mTHfun3_mTH_10_seg_converted/metadata.json", "2p0_fun3_mTH10", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+		
+		// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/searchRadius1p5/metadata.json", "searchRadius1p5", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+		
+		// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/bandWidth2/metadata.json", "bandWidth2", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+		
+		// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/MIE_converted/metadata.json", "Zone Miécourt", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+
+
+		// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/BEU_converted/metadata.json", "Zone Beurnevésin", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+
+		// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/sample_peaks_seg_converted/metadata.json", "Test segmentation cimes", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+
+		// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/sample_stems_seg_converted/metadata.json", "Test segmentation troncs", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+		
+		// Load and add point cloud to scene
+		Potree.loadPointCloud("./data/sampleMIEdef_peaks_seg_converted/metadata.json", "Test segmentation pics - Meth r", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+
+		Potree.loadPointCloud("./data/GT_corr_converted/metadata.json", "Vérité terrain", async e => {
+			let scene = viewer.scene;
+			let pointcloud = e.pointcloud;
+			let material = pointcloud.material;
+			scene.addPointCloud(pointcloud);
+			
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.size = 0.5;
+			material.shape = Potree.PointShape.CIRCLE;
+			material.activeAttributeName = "rgba";
+			//material.pointColorType = Potree.PointColorType.COLOR;
+			//material.rgb = (255, 0, 0);
+
+			
+			viewer.fitToScreen();
+			//scene.view.position.set(2581200,1253600,1000);
+			//scene.view.position.set(2581200,1253600,400); // BEU 2575638, 1260352 MIE 2581200,1253600,400
+			//scene.view.lookAt(new THREE.Vector3(695231.74, 3916988.94, 87.64));
+			
+						// scene.view.setView(
+			// 	[589974.341, 231698.397, 986.146],
+			// 	[589851.587, 231428.213, 715.634],
+			// );
+
+
+		});
+	</script>
+	
+  </body>
+</html>
