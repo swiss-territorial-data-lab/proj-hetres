@@ -19,12 +19,14 @@ library(caret)
 # le fait d'ajouter un point quand il n'y en a pas.
 # Gestion des Inf, mis à NaN puis filled by mean. 
 
+### Define parameters ###
+res_cell <- 2.5 
 
 
 ### Load LAS files ###
 
 # ctg <- readLAScatalog("C:/Users/cmarmy/Documents/STDL/Beeches/DFT/data/sample/", select = "xyzc")
-ctg <- readLAS("C:/Users/cmarmy/Documents/STDL/Beeches/FHI/las/2577600_1260200.las")
+ctg <- readLAS("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/las/2573700_1260500.las")
 # plot(ctg, size = 3, map = TRUE)
 
 ctg = filter_poi(ctg, Classification >= 2 & Classification <=5 )
@@ -32,7 +34,7 @@ ctg = filter_poi(ctg, Classification >= 2 & Classification <=5 )
 
 
 ### Load corresponding extent from SHP Emprise ###
-mySHP<- st_read("C:/Users/cmarmy/Documents/STDL/Beeches/FHI/extent/2577600_1260200.shp")
+mySHP<- st_read("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/extent/2573700_1260500.shp")
 myExt <-extent(mySHP)
 
 
@@ -54,16 +56,16 @@ nlas <- normalize_height(ctg, knnidw())
 ### DTM, CHM, AGL ###
 
 ## DTM : there are three methods with pro and cons.
-# dtm<- rasterize_terrain(ctg, res=1, algorithm = knnidw(k = 10L, p = 2)) # if no buffer available
-# dtm<- rasterize_terrain(ctg, res=1, algorithm = tin()) # if buffer available, like with catalog engine
+# dtm<- rasterize_terrain(ctg, res=res_cell, algorithm = knnidw(k = 10L, p = 2)) # if no buffer available
+# dtm<- rasterize_terrain(ctg, res=res_cell, algorithm = tin()) # if buffer available, like with catalog engine
 # plot_dtm3d(dtm, bg = "white") 
 # plot(dtm, col = gray(1:50/50))
 
 
 ## CHM (Canopy Height Model)
-chm <- rasterize_canopy(nlas, res=0.5, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smooting 
+chm <- rasterize_canopy(nlas, res=res_cell/10, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smooting 
 
-writeRaster(chm, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/chm.tif", overwrite=TRUE)
+writeRaster(chm, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/chm.tif", overwrite=TRUE)
 
 fill.na <- function(x, i=5) { if (is.na(x)[i]) { return(mean(x, na.rm = TRUE)) } else { return(x[i]) }}
 w <- matrix(1, 3, 3)
@@ -76,23 +78,25 @@ names(chms) <- c("Base", "Filled", "Smoothed")
 col <- height.colors(25)
 plot(chms, col = col)
 
-writeRaster(chm_smoothed, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/chm_smoothed.tif", overwrite=TRUE)
+writeRaster(chm_smoothed, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/chm_smoothed.tif", overwrite=TRUE)
 
 
 ## AGL (Above Ground Level)
-agl <- rasterize_canopy(filter_poi(nlas, Z >= 0.5 & Z <=10 ), res=0.5, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smooting 
+agl <- rasterize_canopy(filter_poi(nlas, Classification >= 2 & Classification <=5 ), res=res_cell/10, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smooting 
 col <- height.colors(25)
 plot(agl, col = col)
 
-writeRaster(agl, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/agl.tif", overwrite=TRUE)
+writeRaster(agl, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/agl.tif", overwrite=TRUE)
 
 
 ## NaN handling (borders, no aquisitions) ##
 chm_crop <- crop(chm_smoothed, myExt, snap="near", extend=FALSE)
 chm_ext <-extend(chm_crop, myExt, fill=NA)
 #values(chm_ext)[is.na(values(chm_ext))]=0
-mask_<- pixel_metrics(ctg, ~mean(Z), 1)
+mask_<- pixel_metrics(ctg, ~mean(Z), res_cell) # NEW
 mask_ext <- extend(mask_, myExt, fill=NA)
+values(mask_ext)[is.na(values(mask_ext))]=1000
+values(mask_ext)[values(mask_ext)<1000]=NA
 mask_ext_10 <- aggregate(mask_ext, 10, fun=mean, na.rm=TRUE)
 
 
@@ -113,7 +117,10 @@ sdchm <- aggregate(chm_ext, 10, fun=sd, na.rm=TRUE) # 10 = number of cell vert. 
 plot(sdchm, col = col)
 names(sdchm)<-'sdchm'
 
-mask_ext[is.na(values(sdchm))]=NA
+chm_crop <- crop(chm_smoothed, myExt, snap="near", extend=FALSE)
+chm_ext <-extend(chm_crop, myExt, fill=NA)
+
+mask_ext[is.na(values(sdchm))]=800
 values(sdchm)[is.na(values(sdchm))] = 0 #if no points 
 
 # writeRaster(sdchm, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/sdchm.tif", overwrite=TRUE)
@@ -189,6 +196,7 @@ myMetrics <- function(z, rn)
     }
     
     mVCI <- -dot(P,log(P))/log(n) #VCI(nlas@data$Z, 30, by = 1)
+  
 
     
     # 6.
@@ -199,6 +207,11 @@ myMetrics <- function(z, rn)
     x = (firstabove2/nfirst)*100
     
     CC <- (firstabove2/nfirst)*100 # no first is possible, if in filtered classes
+    
+    
+    if (is.infinite(CC)){
+      browser()
+    }
   }
   
   metrics <- list(
@@ -215,7 +228,7 @@ myMetrics <- function(z, rn)
   return(c(metrics))
 }
 
-myM <- pixel_metrics(nlas, ~myMetrics(Z, ReturnNumber), res = 5) 
+myM <- pixel_metrics(nlas, ~myMetrics(Z, ReturnNumber), res = res_cell) 
 plot(myM, col = height.colors(50))  
 #values(myM)[is.na(values(myM))] = 0
 
@@ -240,7 +253,7 @@ myMetrics_1m <- function(z, rn)
   return(c(metrics))
 }
 
-CC_1m <- pixel_metrics(nlas, ~myMetrics_1m(Z, ReturnNumber), res = 0.5)
+CC_1m <- pixel_metrics(nlas, ~myMetrics_1m(Z, ReturnNumber), res = res_cell/10)
 plot(CC_1m,col=col)
 
 fill.na <- function(x, i=5) { if (is.na(x)[i]) { return(0) } else { return(x[i]) }}
@@ -259,10 +272,24 @@ plot(sdCC, col = col)
 names(myM)<-c("zq99","alpha","beta","cvLAD","VCI","CC")
 myM_crop <- crop(myM, myExt, snap="near", extend=FALSE)
 myM_ext <-extend(myM_crop, myExt, fill=NA)
+mask_ext[is.na(values(myM_ext["zq99"]))]=100
+mask_ext[is.na(values(myM_ext["alpha"]))]=200
+mask_ext[is.na(values(myM_ext["alpha"]))]=300
+mask_ext[is.na(values(myM_ext["cvLAD"]))]=400
+mask_ext[is.na(values(myM_ext["VCI"]))]=500
+mask_ext[is.na(values(myM_ext["CC"]))]=600
 values(myM_ext)[is.na(values(myM_ext))]=0
+mask_ext[is.infinite(values(myM_ext["zq99"]))]=100
+mask_ext[is.infinite(values(myM_ext["alpha"]))]=200
+mask_ext[is.infinite(values(myM_ext["alpha"]))]=300
+mask_ext[is.infinite(values(myM_ext["cvLAD"]))]=400
+mask_ext[is.infinite(values(myM_ext["VCI"]))]=500
+mask_ext[is.infinite(values(myM_ext["CC"]))]=600
+values(myM_ext)[is.infinite(values(myM_ext))]=0
 
 sdCC_crop <- crop(sdCC, myExt, snap="near", extend=FALSE)
 sdCC_ext <-extend(sdCC_crop, myExt, fill=NA)
+mask_ext[is.na(values(sdCC_ext))]=700
 values(sdCC_ext)[is.na(values(sdCC_ext))]=0
 
 ## Put everything together (SpatRaster and table)
@@ -272,9 +299,9 @@ data <- params_frame[, c(1,2,3,4,5,6,7,8)]
 
 
 ## Write outputs ##
-writeRaster(params_spat, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/_params/2577600_1261400_params.tif", overwrite=TRUE)
+writeRaster(params_spat, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/_params/test_params.tif", overwrite=TRUE)
 plot(params_spat, col=col, nc=4,cex.main = 1.5)
 
-values(mask_ext)[is.na(values(mask_ext))]=10000
-writeRaster(mask_ext, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/_mask/2577600_1261400_mask.tif", overwrite=TRUE)
+
+writeRaster(mask_ext, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/_mask/test_mask.tif", overwrite=TRUE)
 
