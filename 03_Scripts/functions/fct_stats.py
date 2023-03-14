@@ -1,5 +1,4 @@
-import os
-import kaleido
+import os, sys
 
 import numpy as np
 import pandas as pd
@@ -11,7 +10,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import plotly.express as px
 
-from fct_misc import ensure_dir_exists
+sys.path.insert(1, '03_Scripts')
+from functions.fct_misc import ensure_dir_exists
 
 def compare_histograms(data, graph_title=None, axis_label=None):
     '''

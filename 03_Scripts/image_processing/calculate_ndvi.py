@@ -80,6 +80,6 @@ if __name__ == "__main__":
         _ = calculate_ndvi(tile, path=ndvi_tile_path)
         written_files.append(ndvi_tile_path)
 
-    print('Some files were written:')
+    logger.info('Some files were written:')
     for file in written_files:
         print(file)
