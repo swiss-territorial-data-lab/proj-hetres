@@ -1,8 +1,6 @@
 import os, sys
 import yaml
-import logging, logging.config
 import time
-
 
 import geopandas as gpd
 import pandas as pd
@@ -10,15 +8,15 @@ import numpy as np
 import matplotlib
 import rasterio
 
+from loguru import logger
 from glob import glob
 
 sys.path.insert(1, '03_Scripts')
 import functions.fct_misc as fct_misc
 from functions.fct_stats import pca_procedure
 
-
-logging.config.fileConfig('logging.conf')
-logger = logging.getLogger('root')
+logger.remove()
+logger.add(sys.stderr, format="{time:YYYY-MM-DD HH:mm:ss} - {level} - {message}", level="INFO")
 
 tic = time.time()
 logger.info('Starting...')

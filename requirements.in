@@ -1,5 +1,6 @@
 geopandas
 kaleido
+loguru
 matplotlib
 pandas
 pip-tools

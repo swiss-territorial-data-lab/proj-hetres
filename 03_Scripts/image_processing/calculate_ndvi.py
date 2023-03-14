@@ -1,12 +1,12 @@
-import os
+import os, sys
 import yaml
-import logging, logging.config
 import time
 
 import geopandas as gpd
 import numpy as np
 import rasterio
 
+from loguru import logger
 from tqdm import tqdm
 from glob import glob
 
@@ -42,8 +42,8 @@ def calculate_ndvi(tile, band_nbr_red=0, band_nbr_nir=3, path=None):
 
 if __name__ == "__main__":
 
-    logging.config.fileConfig('logging.conf')
-    logger = logging.getLogger('root')
+    logger.remove()
+    logger.add(sys.stderr, format="{time:YYYY-MM-DD HH:mm:ss} - {level} - {message}", level="INFO")
 
     tic = time.time()
     logger.info('Starting...')
