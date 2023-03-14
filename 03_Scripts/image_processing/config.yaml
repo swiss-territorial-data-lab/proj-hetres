@@ -1,0 +1,6 @@
+calculate_ndvi.py:
+  working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
+  inputs:
+    north_ortho: initial/True_ortho/Tiled_North/
+    south_ortho: initial/True_ortho/Tiled_South/
+    tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp

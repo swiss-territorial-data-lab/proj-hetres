@@ -4,6 +4,8 @@ matplotlib
 pandas
 pip-tools
 plotly
-scikit-learn
+PyYAML
 rasterio
 rasterstats
+scikit-learn
+tqdm
