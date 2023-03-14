@@ -1,4 +1,5 @@
 output*
+**/test*
 
 # Byte-compiled files
 **/__pycache__/
@@ -7,4 +8,4 @@ output*
 *$py.class
 
 # Jupyter notebook checkpoints
-**/test*
+.ipynb_checkpoints
