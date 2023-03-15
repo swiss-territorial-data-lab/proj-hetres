@@ -21,7 +21,7 @@ res_cell <- 2.5
 ctg <- readLAS("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/las/2573700_1260500.las")
 # plot(ctg, size = 3, map = TRUE)
 
-ctg <- filter_poi(ctg, Classification >= 2 & Classification <= 5)
+ctg <- filter_poi(ctg, Classification >= 2 & Classification <=5 )
 
 
 
@@ -35,7 +35,7 @@ myExt <- extent(mySHP)
 
 ## with ground points
 nlas <- normalize_height(ctg, knnidw())
-#plot(nlas, size = 3, map = TRUE)
+#plot(nlas, size = 3, map = TRUE) 
 #hist(filter_ground(nlas)$Z, breaks = seq(-0.6, 0.6, 0.01), main = "", xlab = "Elevation") #check normalized ground point to zero.
 
 
@@ -57,7 +57,7 @@ nlas <- normalize_height(ctg, knnidw())
 ## CHM (Canopy Height Model)
 chm <- rasterize_canopy(nlas, res=res_cell/10, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smoothing 
 
-writeRaster(chm, "/mnt/data-01/gsalamin/deperissement-hetre/processed/CHM/test_chm.tif", overwrite=TRUE)
+writeRaster(chm, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/chm.tif", overwrite=TRUE)
 
 fill.na <- function(x, i=5) { if (is.na(x)[i]) { return(mean(x, na.rm = TRUE)) } else { return(x[i]) }}
 w <- matrix(1, 3, 3)
@@ -74,7 +74,7 @@ writeRaster(chm_smoothed, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03
 
 
 ## AGL (Above Ground Level)
-agl <- rasterize_canopy(filter_poi(nlas, Classification >= 2 & Classification <=5 ), res=res_cell/10, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smooting 
+agl <- rasterize_canopy(filter_poi(nlas, Classification >= 2 & Classification <=3 ), res=res_cell/10, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smooting 
 col <- height.colors(25)
 plot(agl, col = col)
 
@@ -83,8 +83,8 @@ writeRaster(agl, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/
 
 ## NaN handling (borders, no aquisitions) ##
 chm_crop <- crop(chm_smoothed, myExt, snap="near", extend=FALSE)
-chm_ext <- extend(chm_crop, myExt, fill=NA)
-mask_ <- pixel_metrics(ctg, ~mean(Z), res=res_cell) # NEW
+chm_ext <-extend(chm_crop, myExt, fill=NA)
+mask_<- pixel_metrics(ctg, ~mean(Z), res_cell) # NEW
 mask_ext <- extend(mask_, myExt, fill=NA)
 values(mask_ext)[is.na(values(mask_ext))]=1000
 values(mask_ext)[values(mask_ext)<1000]=NA
@@ -175,3 +175,4 @@ plot(params_spat, col=col, nc=4,cex.main = 1.5)
 
 
 writeRaster(mask_ext, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/_mask/test_mask.tif", overwrite=TRUE)
+
