@@ -1,0 +1,10 @@
+default:
+ RES_CELL: 2.5
+ LAS_PATH: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/las/2574600_1260200.las"
+  
+production:
+ RES_CELL: 2.5
+ WKDIR: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/_tmp/"
+ DIR_LAS: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/_tmp/"
+ NEED_EXTENT: TRUE
+ DIR_EXTENT: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/extent/"
