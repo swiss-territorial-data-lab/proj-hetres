@@ -211,13 +211,11 @@ def plot_pca(coor_PC, results_PCA, pca,
     - results_PCA: dataframe with the new coordinates in the space of the PCA
     - pca: sklearn pca object
     - features: decriptive variables of the dataset (must be numerical only)
-    - to_describe: explenatory variables or the variables to describe with the PCA
     - targets: classes of interest in the explenatory variable.
     - pc_to_plot: number of principal components to plot
     - dirpath_images: directory for the images
     - file_prefix: prefix for the names of the files that will be created
     - title_graph: string with the title for the graphs (the same for all)
-
     return: a list of the written files.
     '''
 
@@ -246,8 +244,9 @@ def plot_pca(coor_PC, results_PCA, pca,
         ax.set_aspect(1)
         ax.grid()
 
-        fig.savefig(os.path.join(dirpath_images, file_prefix + f'PC1{pc}_individuals.jpg'), bbox_inches='tight')
-        written_files.append(file_prefix + f'PC1{pc}_individuals.jpg')
+        figpath=os.path.join(dirpath_images, file_prefix + f'PC1{pc}_individuals.jpg')
+        fig.savefig(figpath, bbox_inches='tight')
+        written_files.append(figpath)
 
         # 5. Plot the graph of the variables
         labels_column=[f'Principal component {k+1} ({expl_var_ratio[k]}%)' for k in range(len(features))]
@@ -284,11 +283,11 @@ def plot_pca(coor_PC, results_PCA, pca,
             margin=dict(l=20, r=10, t=40, b=10),
         )
 
-        file_graph_feat = file_prefix + f'PC1{pc}_features.jpeg'
-        fig.write_image(os.path.join(dirpath_images, file_graph_feat))
+        file_graph_feat = os.path.join(dirpath_images, file_prefix + f'PC1{pc}_features.jpeg')
+        fig.write_image(file_graph_feat)
         
         file_graph_feat_webp = file_graph_feat.replace('jpeg','webp')
-        fig.write_image(os.path.join(dirpath_images, file_graph_feat_webp))
+        fig.write_image(file_graph_feat_webp)
 
         written_files.append(file_graph_feat)
         written_files.append(file_graph_feat_webp)
@@ -313,13 +312,12 @@ def pca_procedure(dataset, features, to_describe,
     - dirpath_images: directory for the images
     - file_prefix: prefix for the names of the files that will be created
     - title_graph: string with the title for the graphs (the same for all)
-
     return: a list of the written files.
     '''
 
     written_files=[]
-    ensure_dir_exists(dirpath_tables)
-    ensure_dir_exists(dirpath_images)
+    _ = ensure_dir_exists(dirpath_tables)
+    _ = ensure_dir_exists(dirpath_images)
     label_pc = [f'PC{x}' for x in range(1, len(features)+1)]
 
     file_prefix = file_prefix + '_' if file_prefix[-1]!='_' else file_prefix
@@ -330,8 +328,9 @@ def pca_procedure(dataset, features, to_describe,
     coor_PC_df = pd.DataFrame(data = coor_PC, columns = label_pc)
     results_PCA = pd.concat([coor_PC_df, dataset[to_describe]], axis = 1)
 
-    results_PCA.round(3).to_csv(os.path.join(dirpath_tables, file_prefix + 'values.csv'), index=False)
-    written_files.append(file_prefix + 'values.csv')
+    filepath=os.path.join(dirpath_tables, file_prefix + 'values.csv')
+    results_PCA.round(3).to_csv(filepath, index=False)
+    written_files.append(filepath)
 
     # 3. Get the number of components to plot and keep
     eigenvalues=pca.explained_variance_
@@ -339,21 +338,23 @@ def pca_procedure(dataset, features, to_describe,
 
     pc_to_plot = determine_pc_num(eigenvalues, bsm)
 
-    fig_pc_num.savefig(os.path.join(dirpath_images, file_prefix + 'PC_to_keep_evplot.jpg'), bbox_inches='tight')
-    written_files.append(file_prefix + 'PC_to_keep_evplot.jpg')
+    figpath=os.path.join(dirpath_images, file_prefix + 'PC_to_keep_evplot.jpg')
+    fig_pc_num.savefig(figpath, bbox_inches='tight')
+    written_files.append(figpath)
 
     # 3 bis. Get features correlation and covariance
     # cf. https://scentellegher.github.io/machine-learning/2020/01/27/pca-loadings-sklearn.html
     loadings = pca.components_.T * np.sqrt(pca.explained_variance_)
 
     loading_matrix = pd.DataFrame(np.round(loadings, 2), columns = label_pc, index=features)
-    loading_matrix.to_csv(os.path.join(dirpath_tables, file_prefix + 'loading_matrix.csv'))
-    written_files.append(os.path.join(dirpath_tables, file_prefix + 'loading_matrix.csv'))
+    filepath=os.path.join(dirpath_tables, file_prefix + 'loading_matrix.csv')
+    loading_matrix.to_csv(filepath)
+    written_files.append(filepath)
 
-    # cf. https://stackoverflow.com/questions/22984335/recovering-features-names-of-explained-variance-ratio-in-pca-with-sklearn
     corr=pd.DataFrame(np.round(np.transpose(pca.components_), 2), columns = label_pc, index = features)
-    corr.to_csv(os.path.join(dirpath_tables, file_prefix + 'corr_matrix.csv'))
-    written_files.append(os.path.join(dirpath_tables, file_prefix + 'corr_matrix.csv'))
+    filepath=os.path.join(dirpath_tables, file_prefix + 'corr_matrix.csv')
+    corr.to_csv(filepath)
+    written_files.append(filepath)
 
     # 4 & 5. Plot the graph of the individuals and of the variables
     targets = dataset[to_describe].unique().tolist()

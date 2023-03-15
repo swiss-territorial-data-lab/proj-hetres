@@ -15,8 +15,7 @@ sys.path.insert(1, '03_Scripts')
 import functions.fct_misc as fct_misc
 from functions.fct_stats import pca_procedure
 
-logger.remove()
-logger.add(sys.stderr, format="{time:YYYY-MM-DD HH:mm:ss} - {level} - {message}", level="INFO")
+logger=fct_misc.format_logger(logger)
 
 tic = time.time()
 logger.info('Starting...')

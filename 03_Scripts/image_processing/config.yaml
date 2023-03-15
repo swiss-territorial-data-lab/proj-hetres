@@ -15,3 +15,15 @@ stats_beeches_pixels.py:
     tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp
     beech_file: processed/trees/ok_trees.gpkg
     beech_layer: ok_trees_20_40_m
+
+stats_per_tree.py:
+  use_filter: true
+  working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
+  inputs:
+    north_ortho: initial/True_ortho/Tiled_North/
+    south_ortho: initial/True_ortho/Tiled_South/
+    north_chm: processed/CHM/CHM_binary_beurnevesin.tif
+    south_chm: processed/CHM/CHM_binary_miecourt.tif
+    tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp
+    beech_file: processed/trees/ok_trees.gpkg
+    beech_layer: ok_trees_20_40_m
