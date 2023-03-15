@@ -9,18 +9,10 @@ library(terra)
 library(sf)
 library(caret)
 
-
-# --- Questions --- #
-# ?? Does it make sens to define threshold with clustering on one varialbes ? 
-# que veut dire une entropy de zéro en terme de distribution ? 
-
-# --- Remarques --- #
-# GF, LAD and VCI from package not use, because not directly usable in pixel_metrics
-# le fait d'ajouter un point quand il n'y en a pas.
-# Gestion des Inf, mis à NaN puis filled by mean. 
+source("03_Scripts/FHI/scripts/functions.R")
 
 ### Define parameters ###
-res_cell <- 2.5 
+res_cell <- 2.5
 
 
 ### Load LAS files ###
@@ -29,13 +21,13 @@ res_cell <- 2.5
 ctg <- readLAS("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/las/2573700_1260500.las")
 # plot(ctg, size = 3, map = TRUE)
 
-ctg = filter_poi(ctg, Classification >= 2 & Classification <=5 )
+ctg <- filter_poi(ctg, Classification >= 2 & Classification <= 5)
 
 
 
 ### Load corresponding extent from SHP Emprise ###
-mySHP<- st_read("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/extent/2573700_1260500.shp")
-myExt <-extent(mySHP)
+mySHP <- st_read("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/extent/2573700_1260500.shp")
+myExt <- extent(mySHP)
 
 
 
@@ -43,8 +35,8 @@ myExt <-extent(mySHP)
 
 ## with ground points
 nlas <- normalize_height(ctg, knnidw())
-#plot(nlas, size = 3, map = TRUE) 
-#hist(filter_ground(nlas)$Z, breaks = seq(-0.6, 0.6, 0.01), main = "", xlab = "Elevation") #check normalized groud point to zero.
+#plot(nlas, size = 3, map = TRUE)
+#hist(filter_ground(nlas)$Z, breaks = seq(-0.6, 0.6, 0.01), main = "", xlab = "Elevation") #check normalized ground point to zero.
 
 
 ## with DTM
@@ -63,9 +55,9 @@ nlas <- normalize_height(ctg, knnidw())
 
 
 ## CHM (Canopy Height Model)
-chm <- rasterize_canopy(nlas, res=res_cell/10, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smooting 
+chm <- rasterize_canopy(nlas, res=res_cell/10, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smoothing 
 
-writeRaster(chm, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/chm.tif", overwrite=TRUE)
+writeRaster(chm, "/mnt/data-01/gsalamin/deperissement-hetre/processed/CHM/test_chm.tif", overwrite=TRUE)
 
 fill.na <- function(x, i=5) { if (is.na(x)[i]) { return(mean(x, na.rm = TRUE)) } else { return(x[i]) }}
 w <- matrix(1, 3, 3)
@@ -91,22 +83,21 @@ writeRaster(agl, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/
 
 ## NaN handling (borders, no aquisitions) ##
 chm_crop <- crop(chm_smoothed, myExt, snap="near", extend=FALSE)
-chm_ext <-extend(chm_crop, myExt, fill=NA)
-#values(chm_ext)[is.na(values(chm_ext))]=0
-mask_<- pixel_metrics(ctg, ~mean(Z), res_cell) # NEW
+chm_ext <- extend(chm_crop, myExt, fill=NA)
+mask_ <- pixel_metrics(ctg, ~mean(Z), res=res_cell) # NEW
 mask_ext <- extend(mask_, myExt, fill=NA)
 values(mask_ext)[is.na(values(mask_ext))]=1000
 values(mask_ext)[values(mask_ext)<1000]=NA
 mask_ext_10 <- aggregate(mask_ext, 10, fun=mean, na.rm=TRUE)
 
-
+rm(ctg)
 
 ### STRUCTURAL PARAMETERS ###
 
 # 1.	99 percentile height. > 2m
 # 2.	Two parameters Weibull-density. alpha = scale
 # 3.  Two parameters Weibull-density. beta = shape
-# 4.	Coefficient of Variation of Leaf Area Density. !! Higher for smaller dz, because more contraste in above and below the thin layer. A large layer make some buffer effect !!
+# 4.	Coefficient of Variation of Leaf Area Density. !! Higher for smaller dz, because more contrast in above and below the thin layer. A large layer make some buffer effect !!
 # 5.	Vertical Complexity Index. !! The entropy we are seeing is depending of dz !!
 # 6.	CHM standard deviation. 
 # 7.  Canopy Cover. > 2m
@@ -126,132 +117,12 @@ values(sdchm)[is.na(values(sdchm))] = 0 #if no points
 # writeRaster(sdchm, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/sdchm.tif", overwrite=TRUE)
 
 
-myMetrics <- function(z, rn)
-{
-  # for 2., 3. and 4.
-  dz <- 5 # thickness of the elevation level
-  zmax <- max(z)
-  h <- zmax-min(z) # max(z[z>2])-min(z[z>2])
-  n <- floor(h)/dz  # number of elevation level
-
-  if (h<2){ #if to low vegetation make it then higher ?
-    alpha=0
-    beta=0
-    cvLAD=0
-    mVCI=0
-    CC = 0
-  } else {
-
-    #2. Weibull's scale and shape parameters
-    hp = h/10 # height percentiles
-    CHP <- vector() # point density per height percentiles
-    for (k in 1:10){
-      CHP[k] <- sum(z>=hp*(k-1) & z<hp*k)/sum(z>=0)
-      if (sum(z>=0)==0){
-        CHP[k]=0
-        }
-    }
-
-    # interpolate if CHP==0
-    for (k in 2:9){
-      if (CHP[k] == 0) {
-        CHP[k] = abs(CHP[k+1]+CHP[k-1])/2
-      }
-    }
-    if (CHP[1] == 0){
-      CHP[1] = CHP[2]/2
-    }
-    if (CHP[10] == 0){
-      CHP[10] = CHP[9]/2
-    }
-
-    if (sum(CHP==0)>=3){
-      alpha = 0
-      beta = 0
-    }else{
-      wb <- eweibull(CHP, method = "mle")
-      alpha <- wb[["parameters"]][["scale"]]
-      beta <- wb[["parameters"]][["shape"]]
-    }
-
-
-    ## 3.
-    kappa <- 0.67 # see literature
-    GF <- vector()
-    LADh <- vector()
-    # GF[1] <- 1/((sum(z>0)+1)*sum(z>dz)) # +1, at least one point in layer
-    # LADh[1] = -log(GF[1])/kappa*dz
-    for (i in 1:n){
-      GF[i] <- (sum(z<dz*(i-1) & z>=0)+1)/((sum(z>=0)+2)*(sum(z>dz*i)+1)) # +1, at least one point in layer
-      LADh[i] = -log(GF[i])/kappa*dz
-    }
-
-    cvLAD <- sqrt(1/(n-1)*sum((LADh-mean(LADh))^2))/mean(LADh)
-
-    
-    # 4. Vertical Complexity Index
-    P <- vector()
-    for (k in 1:n){
-      P[k] <- (sum(z>=dz*(k-1)&z<dz*k)+1)/(sum(z>=0)+1) # +1, at least one point in layer
-    }
-    
-    mVCI <- -dot(P,log(P))/log(n) #VCI(nlas@data$Z, 30, by = 1)
-  
-
-    
-    # 6.
-    first  = rn == 1L
-    zfirst = z[first]
-    nfirst = length(zfirst)
-    firstabove2 = sum(zfirst > 2)
-    x = (firstabove2/nfirst)*100
-    
-    CC <- (firstabove2/nfirst)*100 # no first is possible, if in filtered classes
-    
-    
-    if (is.infinite(CC)){
-      browser()
-    }
-  }
-  
-  metrics <- list(
-    zq99=stats::quantile(z[z>2], 0.99),
-    alpha=alpha,
-    beta=beta,
-    cvLAD=cvLAD,
-    mVCI=mVCI,
-    # sdCHM = done on smoothed chm
-    CC = CC
-    # sdCC = do it afterward on CC 
-  )
-  
-  return(c(metrics))
-}
-
 myM <- pixel_metrics(nlas, ~myMetrics(Z, ReturnNumber), res = res_cell) 
 plot(myM, col = height.colors(50))  
 #values(myM)[is.na(values(myM))] = 0
 
 #writeRaster(myM, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/myM.tif", overwrite=TRUE)
 
-
-myMetrics_1m <- function(z, rn)
-{
-  # 6.
-  first  = rn == 1L 
-  zfirst = z[first]
-  nfirst = length(zfirst)
-  firstabove2 = sum(zfirst > 2)
-  x = (firstabove2/nfirst)*100
-  
-  CC <- (firstabove2/nfirst)*100 # no first is possible, if in filtered classes
-  
-  metrics <- list(
-    sdCC = CC
-  )
-  
-  return(c(metrics))
-}
 
 CC_1m <- pixel_metrics(nlas, ~myMetrics_1m(Z, ReturnNumber), res = res_cell/10)
 plot(CC_1m,col=col)
@@ -304,4 +175,3 @@ plot(params_spat, col=col, nc=4,cex.main = 1.5)
 
 
 writeRaster(mask_ext, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/_mask/test_mask.tif", overwrite=TRUE)
-

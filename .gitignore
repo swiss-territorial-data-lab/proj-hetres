@@ -1,0 +1,12 @@
+output*
+**/test*
+
+# Byte-compiled files
+**/__pycache__/
+**/.R*
+*.py[cod]
+*$py.class
+.vscode
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints
