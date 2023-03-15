@@ -23,8 +23,8 @@ with open('03_Scripts/image_processing/config.yaml') as fp:
 
 logger.info('Defining constants...')
 
-
 WORKING_DIR=cfg['working_directory']
+DESTINATION_DIR=cfg['destination_directory']
 INPUTS=cfg['inputs']
 
 ORTHO_DIR=INPUTS['ortho']
@@ -36,17 +36,22 @@ TILE_DELIMITATION=INPUTS['tile_delimitation']
 BEECHES_POLYGONS=INPUTS['beech_file']
 BEECHES_LAYER=INPUTS['beech_layer']
 
+if 'original_ortho' in cfg.keys():
+    ORIGINAL_ORTHO=cfg['original_ortho']
+else:
+    ORIGINAL_ORTHO=False
+
 os.chdir(WORKING_DIR)
 written_files=[]
 
-table_path=fct_misc.ensure_dir_exists('final/tables')
-im_path=fct_misc.ensure_dir_exists('final/images')
+table_path=fct_misc.ensure_dir_exists(os.path.join(DESTINATION_DIR, 'tables'))
+im_path=fct_misc.ensure_dir_exists(os.path.join(DESTINATION_DIR, 'images'))
 
 logger.info('Reading files...')
 
 beeches=gpd.read_file(BEECHES_POLYGONS, layer=BEECHES_LAYER)
 
-tiles_list_north=glob(ORTHO_DIR)
+tiles_list=glob(ORTHO_DIR)
 
 north_chm=fct_misc.polygonize_binary_raster(NORTH_CHM)
 south_chm=fct_misc.polygonize_binary_raster(SOUTH_CHM)
@@ -61,39 +66,51 @@ fct_misc.test_crs(beeches.crs, chm.crs)
 correct_high_beeches=gpd.overlay(beeches, chm)
 correct_high_beeches.drop(columns=['class'], inplace=True)
 
-tiles_south=tiles[tiles['NAME'].str.startswith('258')]
-beeches_south=correct_high_beeches[correct_high_beeches['zone']=='Miecourt']
-beeches_on_tiles_south=gpd.overlay(beeches_south[['no_arbre', 'etat_sanitaire', 'geometry']],
-                                    tiles_south[['NAME', 'geometry']])
-beeches_on_tiles_south['filepath']=[os.path.join(ORTHO_DIR, 'South_ortho_JUHE_LV95_NF02_3cm_' + name + '.tif')
-                                        for name in beeches_on_tiles_south['NAME'].values]
-del tiles_south, beeches_south
+if ORIGINAL_ORTHO:
+    tiles_south=tiles[tiles['NAME'].str.startswith('258')]
+    beeches_south=correct_high_beeches[correct_high_beeches['zone']=='Miecourt']
+    beeches_on_tiles_south=gpd.overlay(beeches_south[['no_arbre', 'etat_sanitaire', 'geometry']],
+                                        tiles_south[['NAME', 'geometry']])
+    beeches_on_tiles_south['filepath']=[os.path.join(ORTHO_DIR, 'South_ortho_JUHE_LV95_NF02_3cm_' + name + '.tif')
+                                            for name in beeches_on_tiles_south['NAME'].values]
+    del tiles_south, beeches_south
 
-tiles_north=tiles[tiles['NAME'].str.startswith('257')]
-beeches_north=correct_high_beeches[correct_high_beeches['zone'].str.startswith('Beurnevesi')]
-beeches_on_tiles_north=gpd.overlay(beeches_north[['no_arbre', 'etat_sanitaire', 'geometry']],
-                                    tiles_north[['NAME', 'geometry']])
-beeches_on_tiles_north['filepath']=[os.path.join(ORTHO_DIR, 'North_ortho_JUHE_LV95_NF02_3cm_' + name + '.tif')
-                                        for name in beeches_on_tiles_north['NAME'].values]
-del tiles_north, beeches_north
+    tiles_north=tiles[tiles['NAME'].str.startswith('257')]
+    beeches_north=correct_high_beeches[correct_high_beeches['zone'].str.startswith('Beurnevesi')]
+    beeches_on_tiles_north=gpd.overlay(beeches_north[['no_arbre', 'etat_sanitaire', 'geometry']],
+                                        tiles_north[['NAME', 'geometry']])
+    beeches_on_tiles_north['filepath']=[os.path.join(ORTHO_DIR, 'North_ortho_JUHE_LV95_NF02_3cm_' + name + '.tif')
+                                            for name in beeches_on_tiles_north['NAME'].values]
+    del tiles_north, beeches_north
 
-pixels_south=pd.DataFrame()
-for beech in beeches_on_tiles_south.itertuples():
-    pixels=fct_misc.get_pixel_values(beech.geometry, beech.filepath, bands=range(1,5),
-                                    health_status=beech.etat_sanitaire)
+    pixels_south=pd.DataFrame()
+    for beech in beeches_on_tiles_south.itertuples():
+        pixels=fct_misc.get_pixel_values(beech.geometry, beech.filepath, bands=range(1,5),
+                                        health_status=beech.etat_sanitaire)
 
-    pixels_south=pd.concat([pixels_south, pixels])
+        pixels_south=pd.concat([pixels_south, pixels])
 
-pixels_north=pd.DataFrame()
-for beech in beeches_on_tiles_north.itertuples():
-    pixels=fct_misc.get_pixel_values(beech.geometry, beech.filepath, bands=range(1,5),
-        health_status=beech.etat_sanitaire)
+    pixels_north=pd.DataFrame()
+    for beech in beeches_on_tiles_north.itertuples():
+        pixels=fct_misc.get_pixel_values(beech.geometry, beech.filepath, bands=range(1,5),
+            health_status=beech.etat_sanitaire)
 
-    pixels_north=pd.concat([pixels_north, pixels])
+        pixels_north=pd.concat([pixels_north, pixels])
 
-pixels_beeches=pd.concat([pixels_north, pixels_south], ignore_index=True)
-del pixels_north, pixels_south, pixels
+    pixels_beeches=pd.concat([pixels_north, pixels_south], ignore_index=True)
+    del pixels_north, pixels_south, pixels
+else:
+    beeches_on_tiles=gpd.overlay(beeches[['no_arbre', 'etat_sanitaire', 'geometry']],
+                                        tiles[['NAME', 'geometry']])
+    beeches_on_tiles['filepath']=[os.path.join(ORTHO_DIR, name + '_filtered.tif')
+                                            for name in beeches_on_tiles['NAME'].values]
+    
+    pixels_beeches=pd.DataFrame()
+    for beech in beeches_on_tiles.itertuples():
+        pixels=fct_misc.get_pixel_values(beech.geometry, beech.filepath, bands=range(1,5),
+            health_status=beech.etat_sanitaire)
 
+        pixels_beeches=pd.concat([pixels_beeches, pixels], ignore_index=True)
 
 logger.info('Calculating the NDVI for pixels...')
 pixels_beeches.rename(columns={'band1':'Rouge', 'band2':'Vert', 'band3':'Bleu', 'band4':'Proche IR'}, inplace=True)
