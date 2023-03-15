@@ -76,20 +76,7 @@ if USE_FILTER:
 else:
     correct_high_beeches=beeches.copy()
 
-rgb_pathes=[]
-ndvi_pathes=[]
-
-for tile_name in tiles['NAME'].values:
-    if tile_name.startswith('257'):
-        rgb_pathes.append(os.path.join('initial/True_ortho/Tiled_North', 'North_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
-        ndvi_pathes.append(os.path.join('processed/NDVI', 'North_NDVI_' + tile_name + '.tif'))
-
-    elif tile_name.startswith('258'):
-        rgb_pathes.append(os.path.join('initial/True_ortho/Tiled_South', 'South_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
-        ndvi_pathes.append(os.path.join('processed/NDVI', 'South_NDVI_' + tile_name + '.tif'))
-
-tiles['path_RGB']=rgb_pathes
-tiles['path_NDVI']=ndvi_pathes
+tiles=fct_misc.get_ortho_tiles(tiles)
 
 clipped_beeches=fct_misc.clip_labels(correct_high_beeches, tiles)
 

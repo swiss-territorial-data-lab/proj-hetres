@@ -27,3 +27,9 @@ stats_per_tree.py:
     tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp
     beech_file: processed/trees/ok_trees.gpkg
     beech_layer: ok_trees_20_40_m
+
+filter_images.py:
+  filter_type: x
+  working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
+  destination_directory: processed/filtered_images/gaussian_10
+  tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp

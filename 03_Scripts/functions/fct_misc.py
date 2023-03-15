@@ -223,6 +223,7 @@ def polygonize_binary_raster(path):
 
     return gdf
 
+
 def clip_labels(labels_gdf, tiles_gdf, fact=0.99):
     '''
     Clip the labels to the tiles
@@ -257,3 +258,32 @@ def clip_labels(labels_gdf, tiles_gdf, fact=0.99):
     clipped_labels_gdf.rename(columns={'id': 'tile_id'}, inplace=True)
 
     return clipped_labels_gdf
+
+def get_ortho_tiles(tiles, WORKING_DIR=None):
+    '''
+    Get the true orthorectified tiles and the corresponding NDVI file based on the tile name.
+
+    - tiles: dataframe of with the delimitation and the id of the file.
+    - WORKING_DIR: working directory to be set (if needed)
+    return: the tile dataframe with an additional field with the path to each file.
+    '''
+
+    if WORKING_DIR:
+        os.chdir(WORKING_DIR)
+
+    rgb_pathes=[]
+    ndvi_pathes=[]
+
+    for tile_name in tiles['NAME'].values:
+        if tile_name.startswith('257'):
+            rgb_pathes.append(os.path.join('initial/True_ortho/Tiled_North', 'North_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
+            ndvi_pathes.append(os.path.join('processed/NDVI', 'North_NDVI_' + tile_name + '.tif'))
+
+        elif tile_name.startswith('258'):
+            rgb_pathes.append(os.path.join('initial/True_ortho/Tiled_South', 'South_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
+            ndvi_pathes.append(os.path.join('processed/NDVI', 'South_NDVI_' + tile_name + '.tif'))
+
+    tiles['path_RGB']=rgb_pathes
+    tiles['path_NDVI']=ndvi_pathes
+
+    return tiles
