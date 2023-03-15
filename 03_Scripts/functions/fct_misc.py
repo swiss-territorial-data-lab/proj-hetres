@@ -270,17 +270,18 @@ def get_ortho_tiles(tiles, WORKING_DIR=None):
 
     if WORKING_DIR:
         os.chdir(WORKING_DIR)
+    FOLDER_PATH='initial/True_ortho/Tiles'
 
     rgb_pathes=[]
     ndvi_pathes=[]
 
     for tile_name in tiles['NAME'].values:
         if tile_name.startswith('257'):
-            rgb_pathes.append(os.path.join('initial/True_ortho/Tiled_North', 'North_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
+            rgb_pathes.append(os.path.join(FOLDER_PATH, 'North_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
             ndvi_pathes.append(os.path.join('processed/NDVI', 'North_NDVI_' + tile_name + '.tif'))
 
         elif tile_name.startswith('258'):
-            rgb_pathes.append(os.path.join('initial/True_ortho/Tiled_South', 'South_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
+            rgb_pathes.append(os.path.join(FOLDER_PATH, 'South_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
             ndvi_pathes.append(os.path.join('processed/NDVI', 'South_NDVI_' + tile_name + '.tif'))
 
     tiles['path_RGB']=rgb_pathes

@@ -4,9 +4,6 @@ import time
 
 import geopandas as gpd
 import pandas as pd
-import numpy as np
-import matplotlib
-import rasterio
 
 from loguru import logger
 from glob import glob
@@ -30,8 +27,7 @@ logger.info('Defining constants...')
 WORKING_DIR=cfg['working_directory']
 INPUTS=cfg['inputs']
 
-NORTH_ORTHO=INPUTS['north_ortho']
-SOUTH_ORTHO=INPUTS['south_ortho']
+ORTHO_DIR=INPUTS['ortho']
 NORTH_CHM=INPUTS['north_chm']
 SOUTH_CHM=INPUTS['south_chm']
 
@@ -50,8 +46,7 @@ logger.info('Reading files...')
 
 beeches=gpd.read_file(BEECHES_POLYGONS, layer=BEECHES_LAYER)
 
-tiles_list_north=glob(NORTH_ORTHO)
-tiles_list_south=glob(SOUTH_ORTHO)
+tiles_list_north=glob(ORTHO_DIR)
 
 north_chm=fct_misc.polygonize_binary_raster(NORTH_CHM)
 south_chm=fct_misc.polygonize_binary_raster(SOUTH_CHM)
@@ -70,7 +65,7 @@ tiles_south=tiles[tiles['NAME'].str.startswith('258')]
 beeches_south=correct_high_beeches[correct_high_beeches['zone']=='Miecourt']
 beeches_on_tiles_south=gpd.overlay(beeches_south[['no_arbre', 'etat_sanitaire', 'geometry']],
                                     tiles_south[['NAME', 'geometry']])
-beeches_on_tiles_south['filepath']=[os.path.join(SOUTH_ORTHO, 'South_ortho_JUHE_LV95_NF02_3cm_' + name + '.tif')
+beeches_on_tiles_south['filepath']=[os.path.join(ORTHO_DIR, 'South_ortho_JUHE_LV95_NF02_3cm_' + name + '.tif')
                                         for name in beeches_on_tiles_south['NAME'].values]
 del tiles_south, beeches_south
 
@@ -78,7 +73,7 @@ tiles_north=tiles[tiles['NAME'].str.startswith('257')]
 beeches_north=correct_high_beeches[correct_high_beeches['zone'].str.startswith('Beurnevesi')]
 beeches_on_tiles_north=gpd.overlay(beeches_north[['no_arbre', 'etat_sanitaire', 'geometry']],
                                     tiles_north[['NAME', 'geometry']])
-beeches_on_tiles_north['filepath']=[os.path.join(NORTH_ORTHO, 'North_ortho_JUHE_LV95_NF02_3cm_' + name + '.tif')
+beeches_on_tiles_north['filepath']=[os.path.join(ORTHO_DIR, 'North_ortho_JUHE_LV95_NF02_3cm_' + name + '.tif')
                                         for name in beeches_on_tiles_north['NAME'].values]
 del tiles_north, beeches_north
 

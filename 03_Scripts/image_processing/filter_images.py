@@ -5,10 +5,8 @@ from loguru import logger
 from tqdm import tqdm
 
 import geopandas as gpd
-import pandas as pd
 import rasterio
 
-import cv2
 import scipy
 
 sys.path.insert(1, '03_Scripts')
@@ -50,7 +48,7 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
 
     for band in bands:
         im_band=im[band-1, :, :]
-        filtered_band=scipy.ndimage.gaussian_filter(im_band, sigma=10)
+        filtered_band=scipy.ndimage.gaussian_filter(im_band, sigma=5)
         filtered_image[band-1, :, :]=filtered_band
 
     tilepath=os.path.join(DESTINATION_DIR, tile.NAME + '_filtered.tif')

@@ -9,8 +9,6 @@ import pandas as pd
 from rasterstats import zonal_stats
 
 from loguru import logger
-from tqdm import tqdm
-from glob import glob
 
 sys.path.insert(1, '03_Scripts')
 import functions.fct_misc as fct_misc
@@ -33,8 +31,6 @@ USE_FILTER=cfg['use_filter']
 WORKING_DIR=cfg['working_directory']
 INPUTS=cfg['inputs']
 
-NORTH_ORTHO=INPUTS['north_ortho']
-SOUTH_ORTHO=INPUTS['south_ortho']
 NORTH_CHM=INPUTS['north_chm']
 SOUTH_CHM=INPUTS['south_chm']
 
@@ -56,9 +52,6 @@ beeches.drop(columns=['Comm', 'essence', 'diam_tronc', 'nb_tronc', 'hauteur', 'v
                 'transparen', 'masse_foli', 'etat_tronc', 'etat_sanit', 'environnem',
                 'microtopog', 'pente', 'remarque', 'date_leve', 'responsabl',
                 'date_creat', 'vegetation', 'class_san5', 'class_san3', 'r_couronne', 'zone'], inplace=True)
-
-tiles_list_north=glob(NORTH_ORTHO)
-tiles_list_south=glob(SOUTH_ORTHO)
 
 north_chm=fct_misc.polygonize_binary_raster(NORTH_CHM)
 south_chm=fct_misc.polygonize_binary_raster(SOUTH_CHM)
