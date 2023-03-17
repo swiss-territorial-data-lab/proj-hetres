@@ -1,0 +1,17 @@
+	im_nir=im[3,:,:]
+        condition_nir=np.where(im_nir>185, 255,
+                               np.where(im_nir>130, 170,
+                                        np.where(im_nir>95, 85, 
+                                                 0)))
+        condition_ndvi=np.where(im_ndvi>0.3, 255, 
+                                np.where(im_ndvi>0.05, 170, 
+                                         np.where(im_ndvi>-0.11, 85, 
+                                                  0)))
+
+
+        filtered_image[0,:,:]=np.where(condition_nir+condition_ndvi>=340, 0, 255)
+        filtered_image[1,:,:]=np.where(condition_nir+condition_ndvi==510, 105,
+                                       np.where(condition_nir+condition_ndvi>=255, 255,
+                                                np.where(condition_nir+condition_ndvi>=85, 128, 
+                                                         0)))
+        filtered_image[2,:,:]=np.where(condition_nir+condition_ndvi==510, 51, 0)

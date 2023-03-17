@@ -80,7 +80,7 @@ for health_class in clipped_beeches['etat_sanitaire'].unique():
 clipped_beeches=clipped_beeches[~clipped_beeches.is_empty]
 
 logger.info('Getting the statistics of trees...')
-beeches_stats=pd.DataFrame()
+beeches_stats=gpd.GeoDataFrame()
 BANDS={1: 'rouge', 2: 'vert', 3: 'bleu', 4: 'proche IR'}
 calculated_stats=['min', 'max', 'mean', 'median', 'std']
 
@@ -92,8 +92,9 @@ for beech in clipped_beeches.itertuples():
         stats_dict_rgb=stats_rgb[0]
         stats_dict_rgb['band']=BANDS[band_num]
         stats_dict_rgb['health_status']=beech.etat_sanitaire
+        stats_dict_rgb['geometry']=beech.geometry
 
-        beeches_stats=pd.concat([beeches_stats, pd.DataFrame(stats_dict_rgb, index=[0])], ignore_index=True)
+        beeches_stats=pd.concat([beeches_stats, gpd.GeoDataFrame(stats_dict_rgb, index=[0], crs=2056)], ignore_index=True)
     
     stats_ndvi=zonal_stats(beech.geometry, beech.path_NDVI, stats=calculated_stats,
         band=1, nodata=99999)
@@ -103,6 +104,10 @@ for beech in clipped_beeches.itertuples():
     stats_dict_ndvi['health_status']=beech.etat_sanitaire
 
     beeches_stats=pd.concat([beeches_stats, pd.DataFrame(stats_dict_ndvi, index=[0])], ignore_index=True)
+
+filepath=os.path.join(fct_misc.ensure_dir_exists('processed/trees'), 'beech_stats.gpkg')
+beeches_stats.to_file(filepath, layer='stats_per_beech')
+written_files.append(filepath)
 
 beeches_stats.loc[beeches_stats['health_status']=='sain', 'health_status']='1. sain'
 beeches_stats.loc[beeches_stats['health_status']=='malade', 'health_status']='2. malade'
