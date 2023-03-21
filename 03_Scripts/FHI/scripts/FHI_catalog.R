@@ -3,12 +3,18 @@ library(lidR)
 library(sf)
 library(terra)
 library(EnvStats)
+library(pracma)
 
 source("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/scripts/functions.R")
 
+#> INPUTS
+#> OUTPUTS
+#> params_rasters
+#> params_segments (SHP TO MERGE)
 
 
-# The procedure in this script is coming from P. Meng et al (2022), DOI: 10.1080/17538947.2022.2059114
+
+# The procedure in this script is coming partly from P. Meng et al (2022), DOI: 10.1080/17538947.2022.2059114
 
 
 
@@ -17,7 +23,7 @@ Sys.setenv(R_CONFIG_ACTIVE = "production")
 config <- config::get(file="C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/scripts/config.yml")
 
 RES_CELL <- config$RES_CELL
-WKDIR <- config$WKDIR
+SIM_DIR <- config$SIM_DIR
 DIR_LAS <- config$DIR_LAS
 NEED_EXTENT <- config$NEED_EXTENT
 DIR_EXTENT <- config$DIR_EXTENT
@@ -38,6 +44,7 @@ norm_chunk <- function(chunk){
   
   ### Load LAS file ###
   las <- readLAS(chunk)
+  las <- add_attribute(las, las$label, "treeID")
   if (is.empty(las)) return(NULL)
   las_f = filter_poi(las, Classification >= 2 & Classification <=5 )
   
@@ -48,7 +55,7 @@ norm_chunk <- function(chunk){
     str <- chunk@files[1]
     name <- sub(DIR_LAS,'',str)
     name <- sub('.las','',name)
-    las_shp <- st_read(paste0(DIR_EXTENT,name,'.shp'))
+    las_shp <- st_read(paste0(DIR_EXTENT,name,'.gpkg'))
     las_ext <- extent(las_shp)
   } else {
     las_ext <- extent(las_f)
@@ -168,12 +175,22 @@ norm_chunk <- function(chunk){
   writeRaster(mask_ext, paste0(chunk@save,"_mask.tif"), overwrite=TRUE)
   
   
-  las_out <- filter_poi(nlas, buffer == 0) # remove buffer
-  return(las_out)
+  
+  ### Structural parameter computation by segment ###
+  nlas <- filter_poi(nlas, buffer == 0) # remove buffer
+  
+  # ...
+  ccm = ~crownMetricsParams(z = Z, label=treeID, rn = ReturnNumber, intnst=Intensity)
+  
+  seg_params <- crown_metrics(nlas, func = ccm, geom = "concave") # ’point’, ’convex’, ’concave’ or ’bbox’.
+  
+  
+
+  return(seg_params)
 }
 
-ctg <- readLAScatalog(DIR_LAS, select = "xyzcrn")
-opt_output_files(ctg) <- paste0(WKDIR, "/{*}")
+ctg <- readLAScatalog(DIR_LAS)
+opt_output_files(ctg) <- paste0(SIM_DIR, "/{*}")
 options <- list(automerge = TRUE)
 ctg@output_options$drivers$Raster$param$overwrite <- TRUE
 ctg@output_options$drivers$Spatial$param$overwrite <- FALSE
@@ -181,9 +198,10 @@ output <- catalog_apply(ctg, norm_chunk,.options=options)
 
 
 
-#### Merge the output rasters (params, mask, agl, ...) ####
-mergeRaster(WKDIR,"*_params.tif",'mosaic_params.tif')
-mergeRaster(WKDIR,"*_mask.tif",'mosaic_mask.tif')
-mergeRaster(WKDIR,"*_agl.tif",'mosaic_agl.tif')
+#### Merge the output rasters (params, mask, agl, ...) and shapes ####
+mergeRaster(SIM_DIR,"*_params.tif",'mosaic_params.tif')
+mergeRaster(SIM_DIR,"*_mask.tif",'mosaic_mask.tif')
+mergeRaster(SIM_DIR,"*_agl.tif",'mosaic_agl.tif')
 
+mergeVector(SIM_DIR,"*seg.shp","mosaic_seg_params.shp")
 
