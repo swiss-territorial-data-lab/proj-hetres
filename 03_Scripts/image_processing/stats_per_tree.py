@@ -2,13 +2,12 @@ import os, sys
 import yaml
 import time
 import warnings
+from tqdm import tqdm
+from loguru import logger
 
 import geopandas as gpd
 import pandas as pd
-
 from rasterstats import zonal_stats
-
-from loguru import logger
 
 sys.path.insert(1, '03_Scripts')
 import functions.fct_misc as fct_misc
@@ -80,38 +79,46 @@ for health_class in clipped_beeches['etat_sanitaire'].unique():
 clipped_beeches=clipped_beeches[~clipped_beeches.is_empty]
 
 logger.info('Getting the statistics of trees...')
-beeches_stats=gpd.GeoDataFrame()
+beeches_stats=pd.DataFrame()
 BANDS={1: 'rouge', 2: 'vert', 3: 'bleu', 4: 'proche IR'}
 calculated_stats=['min', 'max', 'mean', 'median', 'std']
 
-for beech in clipped_beeches.itertuples():
+for beech in tqdm(clipped_beeches.itertuples(),
+                  desc='Extracting statistics over beeches', total=clipped_beeches.shape[0]):
     for band_num in BANDS.keys():
         stats_rgb=zonal_stats(beech.geometry, beech.path_RGB, stats=calculated_stats,
         band=band_num, nodata=9999)
 
         stats_dict_rgb=stats_rgb[0]
+        stats_dict_rgb['no_arbre']=beech.no_arbre
         stats_dict_rgb['band']=BANDS[band_num]
         stats_dict_rgb['health_status']=beech.etat_sanitaire
-        stats_dict_rgb['geometry']=beech.geometry
 
-        beeches_stats=pd.concat([beeches_stats, gpd.GeoDataFrame(stats_dict_rgb, index=[0], crs=2056)], ignore_index=True)
+        beeches_stats=pd.concat([beeches_stats, pd.DataFrame(stats_dict_rgb, index=[0])], ignore_index=True)
     
     stats_ndvi=zonal_stats(beech.geometry, beech.path_NDVI, stats=calculated_stats,
         band=1, nodata=99999)
     
     stats_dict_ndvi=stats_ndvi[0]
+    stats_dict_ndvi['no_arbre']=beech.no_arbre
     stats_dict_ndvi['band']='ndvi'
     stats_dict_ndvi['health_status']=beech.etat_sanitaire
 
     beeches_stats=pd.concat([beeches_stats, pd.DataFrame(stats_dict_ndvi, index=[0])], ignore_index=True)
 
-filepath=os.path.join(fct_misc.ensure_dir_exists('processed/trees'), 'beech_stats.gpkg')
-beeches_stats.to_file(filepath, layer='stats_per_beech')
+rounded_stats=beeches_stats.copy()
+cols=['min', 'max', 'median', 'mean', 'std']
+rounded_stats[cols]=rounded_stats[cols].round(3)
+
+filepath=os.path.join(fct_misc.ensure_dir_exists('final/tables'), 'beech_stats.csv')
+rounded_stats.to_csv(filepath)
 written_files.append(filepath)
+del rounded_stats, cols, filepath
 
 beeches_stats.loc[beeches_stats['health_status']=='sain', 'health_status']='1. sain'
 beeches_stats.loc[beeches_stats['health_status']=='malade', 'health_status']='2. malade'
 beeches_stats.loc[beeches_stats['health_status']=='mort', 'health_status']='3. mort'
+beeches_stats.rename(columns={'no_arbre': 'id'}, inplace=True)
 
 logger.info('Making some boxplots')
 for band in beeches_stats['band'].unique():

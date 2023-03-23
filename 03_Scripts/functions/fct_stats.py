@@ -326,7 +326,10 @@ def pca_procedure(dataset, features, to_describe,
     pca, coor_PC=calculate_pca(dataset, features, to_describe, label_pc)
 
     coor_PC_df = pd.DataFrame(data = coor_PC, columns = label_pc)
-    results_PCA = pd.concat([coor_PC_df, dataset[to_describe]], axis = 1)
+    try:
+        results_PCA = pd.concat([coor_PC_df, dataset[[to_describe, 'id']]], axis = 1)
+    except KeyError:
+        results_PCA = pd.concat([coor_PC_df, dataset[to_describe]], axis = 1)
 
     filepath=os.path.join(dirpath_tables, file_prefix + 'values.csv')
     results_PCA.round(3).to_csv(filepath, index=False)
