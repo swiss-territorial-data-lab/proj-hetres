@@ -28,7 +28,7 @@ stats_per_tree.py:
     beech_layer: ok_trees_20_40_m
 
 filter_images.py:
-  filter_type: thresholds    # valid values: "gaussian", "downsampling" and "thresholds"
+  filter_type: sieve    # valid values: "gaussian", "downsampling", "sieve" and "thresholds"
   working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
-  destination_directory: final/filtered_10/images
+  destination_directory: processed/filtered_images/branch_delimitation
   tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp

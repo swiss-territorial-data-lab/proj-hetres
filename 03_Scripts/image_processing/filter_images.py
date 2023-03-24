@@ -7,6 +7,7 @@ from tqdm import tqdm
 import numpy as np
 import geopandas as gpd
 import rasterio
+import gdal
 
 import scipy
 
@@ -53,11 +54,11 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
             filtered_band=scipy.ndimage.gaussian_filter(im_band, sigma=5)
         elif FILTER_TYPE=='downsampling':
             filtered_band='xx'
-        elif FILTER_TYPE=='thresholds':
+        elif FILTER_TYPE in ['thresholds', 'sieve']:
             break
         else:
              logger.error('This type of filter is not implemented.'+
-                          ' Only "gaussian", "downsampling" and "threshold" are supported.')
+                          ' Only "gaussian", "downsampling", "sieve" and "threshold" are supported.')
              sys.exit(1)
         
         filtered_image[band-1, :, :]=filtered_band
@@ -89,6 +90,31 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
 
         filtered_image=filtered_image[:3,:,:]
         im_profile.update(count = 3)
+
+    if FILTER_TYPE=='sieve':
+        condition_band=np.where(im[0,:,:]<150, 0,
+                                np.where(im[1,:,:]<150, 0,
+                                         np.where(im[2,:,:]<150, 0, 1)))
+        
+        tilepath=os.path.join(DESTINATION_DIR, 'temp_'+tile.NAME+'_condition.tif')
+        im_profile.update(count= 1)
+        with rasterio.open(tilepath, 'w', **im_profile) as dst:
+                dst.write(condition_band[np.newaxis, ...])
+        
+        conditional_im = gdal.Open(tilepath, 1)  # open image in read-write mode
+        band = conditional_im.GetRasterBand(1)
+        gdal.SieveFilter(srcBand=band, maskBand=None, dstBand=band, threshold=50, connectedness=8)
+
+        arr = band.ReadAsArray()
+        [rows, cols] = arr.shape
+        driver = gdal.GetDriverByName("GTiff")
+        outdata = driver.Create(os.path.join(DESTINATION_DIR, tile.NAME+'_filtered.tif'), cols, rows, 1, gdal.GDT_Byte)
+        outdata.SetGeoTransform(conditional_im.GetGeoTransform())##sets same geotransform as input
+        outdata.SetProjection(conditional_im.GetProjection())##sets same projection as input
+        outdata.GetRasterBand(1).WriteArray(arr)
+
+        os.remove(tilepath)
+        continue
 
     tilepath=os.path.join(DESTINATION_DIR, tile.NAME + '_filtered.tif')
     with rasterio.open(tilepath, 'w', **im_profile) as dst:
