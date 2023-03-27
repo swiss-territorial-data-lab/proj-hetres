@@ -62,6 +62,7 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
 
 
     elif FILTER_TYPE=='thresholds':
+        # Threshold based on the images of the script `stats_beeches_pixels.py`
         condition_image=im.copy()
         nbr_bands=0
 
@@ -91,6 +92,9 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
 
 
     elif FILTER_TYPE=='sieve':
+        # This filter actually puts a condition before applying the sieve filter in the goal of extacting the branches with
+        # exclusively the use of the RGB branches.
+
         condition_band=np.where(im[0,:,:]<150, 0,
                                 np.where(im[1,:,:]<150, 0,
                                          np.where(im[2,:,:]<150, 0, 1)))
@@ -108,15 +112,15 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
         [rows, cols] = arr.shape
         driver = gdal.GetDriverByName("GTiff")
         outdata = driver.Create(os.path.join(DESTINATION_DIR, tile.NAME+'_filtered.tif'), cols, rows, 1, gdal.GDT_Byte)
-        outdata.SetGeoTransform(conditional_im.GetGeoTransform())##sets same geotransform as input
-        outdata.SetProjection(conditional_im.GetProjection())##sets same projection as input
+        outdata.SetGeoTransform(conditional_im.GetGeoTransform())   ##sets same geotransform as input
+        outdata.SetProjection(conditional_im.GetProjection())       ##sets same projection as input
         outdata.GetRasterBand(1).WriteArray(arr)
 
         os.remove(tilepath)
         continue
 
     elif FILTER_TYPE=='downsampling':
-        scale=1/5
+        scale=1/17
         
         with rasterio.open(tile.path_RGB) as dataset:
             # resample data to target shape
@@ -149,4 +153,4 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
     with rasterio.open(tilepath, 'w', **im_profile) as dst:
             dst.write(filtered_image)
 
-logger.success(f'Done! The file were written in {DESTINATION_DIR}.')
+logger.success(f'Done! The files were written in {DESTINATION_DIR}.')

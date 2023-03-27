@@ -7,12 +7,12 @@ calculate_ndvi.py:
 stats_beeches_pixels.py:
   original_ortho: false
   working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
-  destination_directory: final/filtered_10/
+  destination_directory: final/downsampling_1on17/
   inputs:
-    ortho: processed/filtered_images/gaussian_10
+    ortho: processed/filtered_images/downsampling_1on17
+    tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp
     north_chm: processed/CHM/CHM_binary_beurnevesin.tif
     south_chm: processed/CHM/CHM_binary_miecourt.tif
-    tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp
     beech_file: processed/trees/ok_trees.gpkg
     beech_layer: ok_trees_20_40_m
 
@@ -30,5 +30,5 @@ stats_per_tree.py:
 filter_images.py:
   filter_type: downsampling    # valid values: "gaussian", "downsampling", "sieve" and "thresholds"
   working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
-  destination_directory: processed/filtered_images/downsampling_1on3
+  destination_directory: processed/filtered_images/downsampling_1on17
   tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp
