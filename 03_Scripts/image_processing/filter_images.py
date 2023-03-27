@@ -88,7 +88,7 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
         filtered_image[1,:,:]=np.where((condition_image[0,:,:]==255) & (condition_image[1,:,:]==255), 255, 0)
         filtered_image[2,:,:]=np.where(condition_image[0,:,:]!=condition_image[1,:,:], 255, 0)
 
-        # filtered_image=filtered_image[:3,:,:]
+        filtered_image=filtered_image[:3,:,:]
         im_profile.update(count = 3)
 
 
