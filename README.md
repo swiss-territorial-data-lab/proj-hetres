@@ -14,9 +14,9 @@ The scripts all define a working folder. They will create the `processed` and `f
 ```
 
 ### Getting started
-The following method and scripts was tested on a linux system.
+The following method and scripts were tested on a linux system.
 
-Once a python environment is created, ensure you have GDAL for Pyhton installed. Then, the necessary library can be installed with pip using the file `requirements.txt`.
+Once a python environment is created, ensure you have GDAL for Python installed. Then, the necessary libraries can be installed with pip using the file `requirements.txt`.
 Then, the base images can be processed to produce images with the NDVI value. Those are used if we choose to filter the images based on thresholds and to calculate the statistics per tree.
 
 ```
@@ -41,7 +41,7 @@ stats_beeches_pixels.py:
         beech_layer:            # Layer in the geopackage for the beeches
 ```
 
-The script `stats_per_tree.py` allows to calculate the min, max, mean, median and standard deviation of the pixels over the beech polygons. Then, it produces the boxplots and PCA of those values over each band. It receives parameters from the config file. Those are the same than for the script `stats_beeches_pixels.py` except that the filtering based on the CHM can be disabled and that it necessarily uses the original images.
+The script `stats_per_tree.py` allows to calculate the min, max, mean, median and standard deviation of the pixels over the beech polygons. Then, it produces the boxplots and PCA of those values over each band. It receives parameters from the config file. Those are the same than for the script `stats_beeches_pixels.py` except that the filtering based on the CHM can be disabled and that it can only use the original images.
 
 The script `filter_images.py` allows to filter the original images. It receives the following parameters from the config file:
 

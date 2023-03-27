@@ -1,4 +1,4 @@
-	im_nir=im[3,:,:]
+        im_nir=im[3,:,:]
         condition_nir=np.where(im_nir>185, 255,
                                np.where(im_nir>130, 170,
                                         np.where(im_nir>95, 85, 
