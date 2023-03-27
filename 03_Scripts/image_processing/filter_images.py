@@ -8,6 +8,7 @@ import numpy as np
 import geopandas as gpd
 import rasterio
 import gdal
+from rasterio.enums import Resampling
 
 import scipy
 
@@ -42,29 +43,25 @@ tiles=fct_misc.get_ortho_tiles(tiles)
 bands=range(1,5)
 thresholds={1: None, 2: None, 3: None, 4: 130, 5: 0.05}
 for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0]):
-    with rasterio.open(tile.path_RGB) as src:
-        im=src.read(bands)
-        im_profile=src.profile
-
-    filtered_image=im.copy()
-    
-    for band in bands:
-        im_band=im[band-1, :, :]
-        if FILTER_TYPE=='gaussian':
-            filtered_band=scipy.ndimage.gaussian_filter(im_band, sigma=5)
-        elif FILTER_TYPE=='downsampling':
-            filtered_band='xx'
-        elif FILTER_TYPE in ['thresholds', 'sieve']:
-            break
-        else:
-             logger.error('This type of filter is not implemented.'+
-                          ' Only "gaussian", "downsampling", "sieve" and "threshold" are supported.')
-             sys.exit(1)
         
-        filtered_image[band-1, :, :]=filtered_band
-    im_profile.update(count = 4)
+    if FILTER_TYPE in ['gaussian', 'thresholds', 'sieve']:
+        with rasterio.open(tile.path_RGB) as src:
+            im=src.read(bands)
+            im_profile=src.profile
 
-    if FILTER_TYPE=='thresholds':
+
+    if FILTER_TYPE=='gaussian':
+        filtered_image=im.copy()
+    
+        for band in bands:
+            im_band=im[band-1, :, :]
+            filtered_band=scipy.ndimage.gaussian_filter(im_band, sigma=5)
+            filtered_image[band-1, :, :]=filtered_band
+
+        im_profile.update(count = 4)
+
+
+    elif FILTER_TYPE=='thresholds':
         condition_image=im.copy()
         nbr_bands=0
 
@@ -84,6 +81,7 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
             nbr_bands+=1
             condition_image[nbr_bands-1, :, :]=condition_band
 
+        # Hard-coded for the use of 3 cases based on 2 conditional images.
         filtered_image[0,:,:]=np.where((condition_image[0,:,:]==0) & (condition_image[1,:,:]==0), 255, 0)
         filtered_image[1,:,:]=np.where((condition_image[0,:,:]==255) & (condition_image[1,:,:]==255), 255, 0)
         filtered_image[2,:,:]=np.where(condition_image[0,:,:]!=condition_image[1,:,:], 255, 0)
@@ -91,7 +89,8 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
         filtered_image=filtered_image[:3,:,:]
         im_profile.update(count = 3)
 
-    if FILTER_TYPE=='sieve':
+
+    elif FILTER_TYPE=='sieve':
         condition_band=np.where(im[0,:,:]<150, 0,
                                 np.where(im[1,:,:]<150, 0,
                                          np.where(im[2,:,:]<150, 0, 1)))
@@ -115,6 +114,36 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
 
         os.remove(tilepath)
         continue
+
+    elif FILTER_TYPE=='downsampling':
+        scale=1/5
+        
+        with rasterio.open(tile.path_RGB) as dataset:
+            # resample data to target shape
+            filtered_image = dataset.read(
+                out_shape=(
+                    dataset.count,
+                    int(dataset.height * scale),
+                    int(dataset.width * scale)
+                ),
+                resampling=Resampling.bilinear
+            )
+
+            im_profile = dataset.profile.copy()
+            # scale image transform
+            transform = dataset.transform * dataset.transform.scale(
+                (dataset.width / filtered_image.shape[-1]),
+                (dataset.height / filtered_image.shape[-2])
+            )
+        
+        im_profile.update({"height": filtered_image.shape[-2],
+            "width": filtered_image.shape[-1],
+            "transform": transform})
+
+    else:
+        logger.error('This type of filter is not implemented.'+
+                    ' Only "gaussian", "downsampling", "sieve" and "threshold" are supported.')
+        sys.exit(1)
 
     tilepath=os.path.join(DESTINATION_DIR, tile.NAME + '_filtered.tif')
     with rasterio.open(tilepath, 'w', **im_profile) as dst:
