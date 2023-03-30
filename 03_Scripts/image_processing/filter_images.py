@@ -25,6 +25,7 @@ with open('03_Scripts/image_processing/config.yaml') as fp:
 
 logger.info('Defining constants...')
 
+ORIGINAL_ORTHO=cfg['original_ortho']
 FILTER_TYPE=cfg['filter_type']
 
 WORKING_DIR=cfg['working_directory']
@@ -38,7 +39,11 @@ _ = fct_misc.ensure_dir_exists(DESTINATION_DIR)
 logger.info('Reading file...')
 tiles=gpd.read_file(TILE_DELIMITATION)
 
-tiles=fct_misc.get_ortho_tiles(tiles)
+if ORIGINAL_ORTHO:
+    tiles=fct_misc.get_ortho_tiles(tiles)
+else:
+    ORTHO_DIR=cfg['ortho_dir']
+    tiles['path_RGB']=[os.path.join(ORTHO_DIR, name + '_filtered.tif') for name in tiles['NAME'].values]
 
 bands=range(1,5)
 thresholds={1: None, 2: None, 3: None, 4: 130, 5: 0.05}
@@ -76,8 +81,18 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
                 condition_image[nbr_bands-1, :, :]=condition_band
 
         if thresholds[5]:
-            with rasterio.open(tile.path_NDVI) as src:
-                im_ndvi=src.read(1)
+            try:
+                with rasterio.open(tile.path_NDVI) as src:
+                    im_ndvi=src.read(1)
+            except AttributeError as e:
+                if str(e)=="'Pandas' object has no attribute 'path_NDVI'":
+                        red_band=im[0].astype('float32')
+                        nir_band=im[3].astype('float32')
+                        im_ndvi=np.divide((nir_band - red_band),(nir_band + red_band),
+                                            out=np.zeros_like(nir_band - red_band),
+                                            where=(nir_band + red_band)!=0)
+                else:
+                    logger.error(f'AttributeError while oppening the NDVI tile. Message: {str(e)}')
 
             condition_band=np.where(im_ndvi>thresholds[5], 255, 0)
             nbr_bands+=1

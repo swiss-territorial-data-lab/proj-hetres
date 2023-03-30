@@ -33,7 +33,7 @@ stats_beeches_pixels.py:
     working_directory:          # Path to the working directory
     destination_directory:      # Path for the outputs images and tables
     inputs:
-        ortho:                  # Folder of the ortho images
+        ortho_dir:                  # Folder of the ortho images
         tile_delimitation:      # Shapefile delimitating the tiles and with the attribute "NAME"
         north_chm:              # Binary CHM for the north zone (geotiff)
         south_chm:              # Binary CHM for the south zone (geotiff)
