@@ -1,10 +1,23 @@
 default:
- RES_CELL: 2.5
- LAS_PATH: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/las/2574600_1260200.las"
-  
-production:
- RES_CELL: 2.5
- WKDIR: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/_tmp/"
- DIR_LAS: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/_tmp/"
+ PATH_LAS: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/DFT/data/output/2_GTseg_hMaxima/las/dissID_0_1_5_6_mTH_10_seg.las"
+ PATH_EXTENT: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/GT/AOI/dissID_0_1_5_6_mTH_10_seg.gpkg"
  NEED_EXTENT: TRUE
- DIR_EXTENT: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/extent/"
+ SIM_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/_tmp/"
+ SIM_FOLDER: "_tmp/"
+ RES_CELL: 2.5
+ PATH_GT: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/GT/GT_Z_beechesAOI_corr_attribute_point_vhi.shp"
+ SIM_STATS: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/02_data/aerial/"
+ DESCRIPTORS: "all" # all, NDVI_diff, VHI, Structural params, Stats&PCA
+ CUTOFF: [0.33,0.33,0.33]
+ 
+production:
+ DIR_LAS: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/las/" #"C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/DFT/data/output/2_GTseg_hMaxima/las/" #
+ DIR_EXTENT: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/extent/" #"C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/GT/AOI/" #
+ NEED_EXTENT: TRUE
+ SIM_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/res2p5_segHmax/"
+ SIM_FOLDER: "res2p5_segHmax/"
+ RES_CELL: 2.5
+ PATH_GT: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/GT/GT_Z_beechesAOI_corr_attribute_point_vhi.shp"
+ SIM_STATS: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/02_data/aerial/"
+ DESCRIPTORS: "all" # all, NDVI_diff, VHI, Structural params, Stats&PCA
+ CUTOFF: [0.33,0.33,0.33]

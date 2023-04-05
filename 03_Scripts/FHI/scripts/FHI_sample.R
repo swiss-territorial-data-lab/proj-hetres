@@ -1,3 +1,21 @@
+#> This script computes metrics on a raster grid and on the segmentation polygons
+#> from segmented point cloud. 
+#> The procedure in this script is coming partly from P. Meng et al (2022), 
+#> DOI: 10.1080/17538947.2022.2059114.
+#> 
+#> INPUTS:
+#> - point cloud with points labelled with the segment ID from the segmentation
+#> - corresponding shape file (extent) of the point clouds. 
+#> 
+#> OUTPUTS
+#> - sample_params.tif: raster with structural parameters in attributes
+#> - sample_seg_params.shp: segmentation polygon with structural
+#>                          parameters in attributes
+#> - sample_mask.tif: mask for undefined values
+#> - sample_agl.tif: above ground level (AGL) height (understory)
+
+
+
 library(config)
 library(lidR)
 library(sf)
@@ -14,19 +32,23 @@ Sys.setenv(R_CONFIG_ACTIVE = "default")
 config <- config::get(file="C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/scripts/config.yml")
 
 RES_CELL <- config$RES_CELL
+PATH_LAS <- config$PATH_LAS
+PATH_EXTENT <- config$PATH_EXTENT
+SIM_DIR <- config$SIM_DIR
 
 
 
 ### Load LAS file ###
-las <- readLAS("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/las/2574600_1260200.las")
+las <- readLAS(PATH_LAS)
+las <- add_attribute(las, las$label, "treeID")
 # plot(las, size = 3, map = TRUE)
 
 las <- filter_poi(las, Classification >= 2 & Classification <=5 )
 
 
 
-### Load corresponding extent from SHP emprise ###
-sample_shp <- st_read("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/extent/2574600_1260200.shp")
+### Load corresponding extent from SHP ###
+sample_shp <- st_read(PATH_EXTENT)
 sample_ext <- extent(sample_shp)
 
 
@@ -35,6 +57,7 @@ sample_ext <- extent(sample_shp)
 
 ## with ground points
 nlas <- normalize_height(las, knnidw())
+zmax <- max(nlas$Z)
 #plot(nlas, size = 3, map = TRUE) 
 #hist(filter_ground(nlas)$Z, breaks = seq(-0.6, 0.6, 0.01), main = "", xlab = "Elevation") #check normalized ground point to zero.
 
@@ -57,7 +80,7 @@ nlas <- normalize_height(las, knnidw())
 ## CHM (Canopy Height Model)
 chm <- rasterize_canopy(nlas, res=RES_CELL/10, pitfree(thresholds = c(0, 10, 20, 30), max_edge = c(0, 1.5), subcircle = 0.15)) # adjust max_edge for smoothing 
 
-# writeRaster(chm, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/sample_chm.tif", overwrite=TRUE)
+# writeRaster(chm, paste0(SIM_DIR,"sample_chm.tif"), overwrite=TRUE)
 
 fill.na <- function(x, i=5) { if (is.na(x)[i]) { return(mean(x, na.rm = TRUE)) } else { return(x[i]) }}
 w <- matrix(1, 3, 3)
@@ -67,10 +90,10 @@ chm_smoothed <- terra::focal(chm_filled, w, fun = mean, na.rm = TRUE)
 
 chms <- c(chm, chm_filled, chm_smoothed)
 names(chms) <- c("Base", "Filled", "Smoothed")
-col <- height.colors(25)
-plot(chms, col = col)
+# col <- height.colors(25)
+# plot(chms, col = col)
 
-# writeRaster(chm_smoothed, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/sample_chm_smoothed.tif", overwrite=TRUE)
+# writeRaster(chm_smoothed, paste0(SIM_DIR,"sample_chm_smoothed.tif"), overwrite=TRUE)
 
 
 ## AGL (Above Ground Level)
@@ -78,14 +101,14 @@ agl <- rasterize_canopy(filter_poi(nlas, Classification >= 2 & Classification <=
 col <- height.colors(25)
 plot(agl, col = col)
 
-writeRaster(agl, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/sample_agl.tif", overwrite=TRUE)
+writeRaster(agl,paste0(SIM_DIR,"sample_agl.tif"), overwrite=TRUE)
 
 
 ## NaN handling (borders, no aquisitions) 
 chm_crop <- crop(chm_smoothed, sample_ext, snap="near", extend=FALSE)
-chm_ext <-extend(chm_crop, sample_ext, fill=NA)
+chm_ext <-extend(chm_crop, sample_ext, snap="in", fill=NA)
 mask_<- pixel_metrics(las, ~mean(Z), RES_CELL) 
-mask_ext <- extend(mask_, sample_ext, fill=NA)
+mask_ext <- extend(mask_, sample_ext, snap="in",fill=NA)
 values(mask_ext)[is.na(values(mask_ext))]=1000
 values(mask_ext)[values(mask_ext)<1000]=NA
 mask_ext_10 <- aggregate(mask_ext, 10, fun=mean, na.rm=TRUE)
@@ -96,57 +119,55 @@ rm(las)
 
 ### STRUCTURAL PARAMETERS ###
 
-# 1.	99 percentile height. > 2m
-# 2.	Two parameters Weibull-density. alpha = scale
-# 3.  Two parameters Weibull-density. beta = shape
-# 4.	Coefficient of Variation of Leaf Area Density. !! Higher for smaller dz, because more contrast in above and below the thin layer. A large layer make some buffer effect !!
-# 5.	Vertical Complexity Index. !! The entropy we are seeing is depending of dz !!
+# 1.	99 percentile height.
+# 2.	Two parameters Weibull-density, alpha = scale.
+# 3.  Two parameters Weibull-density, beta = shape.
+# 4.	Coefficient of Variation of Leaf Area Density. 
+# 5.	Vertical Complexity Index.
 # 6.	CHM standard deviation. 
-# 7.  Canopy Cover. > 2m
+# 7.  Canopy Cover.
 # 8.	Standard deviation of Canopy cover. 
 
 
 ## 6. CHM standard deviation
 sdchm <- aggregate(chm_ext, 10, fun=sd, na.rm=TRUE) # 10 = number of cell vert. and horz. to aggregate
-plot(sdchm, col = col)
+# plot(sdchm, col = col)
 names(sdchm)<-'sdchm'
 
 chm_crop <- crop(chm_smoothed, sample_ext, snap="near", extend=FALSE)
-chm_ext <-extend(chm_crop, sample_ext, fill=NA)
+chm_ext <-extend(chm_crop, snap="in",sample_ext, fill=NA)
 
 mask_ext[is.na(values(sdchm))]=800
 values(sdchm)[is.na(values(sdchm))] = 0 #if no points 
 
-# writeRaster(sdchm, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/sample_sdchm.tif", overwrite=TRUE)
+# writeRaster(sdchm, paste0(SIM_DIR,"sample_sdchm.tif"), overwrite=TRUE)
 
 
 ## Structural parameters 1., 2., 3., 4., 5 and 7.
-sample_params <- pixel_metrics(nlas, ~metricsParams(Z, ReturnNumber), res = RES_CELL) 
-plot(sample_params, col = height.colors(50))  
-
-#writeRaster(sample_params, "C:/Users/cmarmy/Documents/STDL/Beeches/FHI/sample_sample_params.tif", overwrite=TRUE)
+sample_params <- pixel_metrics(nlas, ~metricsParams(Z, ReturnNumber, Intensity), res = RES_CELL) 
+# plot(sample_params, col = height.colors(50))  
 
 
 ## 8. Standard deviation of Canopy Cover computation
 cc_1m <- pixel_metrics(nlas, ~metricsParams1m(Z, ReturnNumber), res = RES_CELL/10)
-plot(cc_1m,col=col)
+# plot(cc_1m,col=col)
 
 fill.na <- function(x, i=5) { if (is.na(x)[i]) { return(0) } else { return(x[i]) }}
 w <- matrix(1, 3, 3)
 cc_1m_filled <- terra::focal(cc_1m, w, fun = fill.na)
-plot(cc_1m_filled, col = col)
+# plot(cc_1m_filled, col = col)
 
 cc_1m_crop<- crop(cc_1m_filled, sample_ext, snap="near", extend=FALSE)
-cc_1m_ext <-extend(cc_1m_crop, sample_ext, fill=NA)
+cc_1m_ext <-extend(cc_1m_crop, sample_ext, snap="in", fill=NA)
 
 sdcc <- aggregate(cc_1m_ext[[1]], 10, fun=sd, na.rm=TRUE)
-plot(sdcc, col = col)
+# plot(sdcc, col = col)
 
 
-## NaN handling (borders, no aquisitions) 
-names(sample_params)<-c("zq99","alpha","beta","cvLAD","VCI","CC")
+## NaN handling (borders, no acquisitions) 
+names(sample_params)<-c("zq99","alpha","beta","cvLAD","VCI","i_mean", "i_sd", "CC")
 sample_params_crop <- crop(sample_params, sample_ext, snap="near", extend=FALSE)
-sample_params_ext <-extend(sample_params_crop, sample_ext, fill=NA)
+sample_params_ext <-extend(sample_params_crop, sample_ext, snap="in", fill=NA)
 mask_ext[is.na(values(sample_params_ext["zq99"]))]=100
 mask_ext[is.na(values(sample_params_ext["alpha"]))]=200
 mask_ext[is.na(values(sample_params_ext["alpha"]))]=300
@@ -163,7 +184,7 @@ mask_ext[is.infinite(values(sample_params_ext["CC"]))]=600
 values(sample_params_ext)[is.infinite(values(sample_params_ext))]=0
 
 sdcc_crop <- crop(sdcc, sample_ext, snap="near", extend=FALSE)
-sdcc_ext <-extend(sdcc_crop, sample_ext, fill=NA)
+sdcc_ext <-extend(sdcc_crop, sample_ext, snap="in",fill=NA)
 mask_ext[is.na(values(sdcc_ext))]=700
 values(sdcc_ext)[is.na(values(sdcc_ext))]=0
 
@@ -175,9 +196,29 @@ data <- params_frame[, c(1,2,3,4,5,6,7,8)]
 
 
 ## Write outputs ##
-writeRaster(params_spat, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/sample_params.tif", overwrite=TRUE)
+writeRaster(params_spat, paste0(SIM_DIR,"sample_params.tif"), overwrite=TRUE)
 plot(params_spat, col=col, nc=4,cex.main = 1.5)
 
 
-writeRaster(mask_ext, "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/sample_mask.tif", overwrite=TRUE)
+writeRaster(mask_ext, paste0(SIM_DIR,"sample_mask.tif"), overwrite=TRUE)
 
+
+
+### Structural parameter computation by segment ###
+
+# ...
+ccm = ~crownMetricsParams(z = Z, label=treeID, rn = ReturnNumber, intnst=Intensity)
+
+seg_params <- crown_metrics(nlas, func = ccm, geom = "concave") # ’point’, ’convex’, ’concave’ or ’bbox’.
+seg_params <- seg_params[(is.finite(sf::st_is_valid(seg_params))),]
+
+plot(seg_params["zq99_seg"], pal = hcl.colors)
+plot(seg_params["alpha_seg"], pal = hcl.colors)
+plot(seg_params["beta_seg"], pal = hcl.colors)
+plot(seg_params["cvlad_seg"], pal = hcl.colors)
+plot(seg_params["vci_seg"], pal = hcl.colors)
+plot(seg_params["i_mean_seg"], pal = hcl.colors)
+plot(seg_params["i_sd_seg"], pal = hcl.colors)
+
+file.remove(paste0(SIM_DIR,"sample_seg_params.shp"))
+st_write(seg_params,paste0(SIM_DIR,"sample_seg_params.shp"), driver="ESRI Shapefile")  # create to a shapefile 
