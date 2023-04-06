@@ -72,112 +72,80 @@ test <- subset(test_out, select = -c(1))
 
 
 
-### Train RF model ###
+### Train and test RF model ###
 
-## Train unique RF ##
-# train <- upSample(train, train$CLASS_SAN3)[,-c(67)] #downSample 
-rf <- randomForest(CLASS_SAN3~., data=train, ntree=500, proximity=TRUE, cutoff=CUTOFF)
-p1<-predict(rf,test)
-cM <-confusionMatrix(p1, test$CLASS_SAN3)
-confusionMatrix(p1, test$CLASS_SAN3)
-Kappa(cM[["table"]],r = 1,alternative = c("two.sided"),conf.level = 0.95,partial = FALSE)[1]
+## Single RF ##
 
-train_control<- trainControl(method="none", sampling="up", summaryFunction = mySummary)
-model<- train(CLASS_SAN3~., data=train, trControl=train_control, metric="fdr", method="rf", ntree=500, cutoff=CUTOFF, varImp=TRUE)
-p1<-predict(model,test)
-cM <-confusionMatrix(p1, test$CLASS_SAN3)
-confusionMatrix(p1, test$CLASS_SAN3)
-Kappa(cM[["table"]],r = 1,alternative = c("two.sided"),conf.level = 0.95,partial = FALSE)[1]
+# # train <- upSample(train, train$CLASS_SAN3)[,-c(67)] #downSample 
+# rf <- randomForest(CLASS_SAN3~., data=train, nree=500, proximity=TRUE, cutoff=CUTOFF)
+# p1<-predict(rf,test)
+# cM <-confusionMatrix(p1, test$CLASS_SAN3)
+# confusionMatrix(p1, test$CLASS_SAN3)
+# Kappa(cM[["table"]],r = 1,alternative = c("two.sided"),conf.level = 0.95,partial = FALSE)[1]
 
-randomForest::varImpPlot(model, sort=FALSE, main=paste0("Variable Importance Plot at ",SIM_FOLDER," m"))
-
-## average OOB-error against the number of trees. ##
+# # average OOB-error against the number of trees.
 # model$err.rate[,1] - the i-th element being the (OOB) error rate for all trees up to the i-th.
-rf$err.rate[,1]
-plot(rf$err.rate[,1],type = "l",xlab = "# of trees", ylab = "Out-of-bag error",main = "RF with param struct (on 2.5m or seg), VHI and NDVI_diff")
+# rf$err.rate[,1]
+# plot(rf$err.rate[,1],type = "l",xlab = "# of trees", ylab = "Out-of-bag error",main = "RF with param struct (on 2.5m or seg), VHI and NDVI_diff")
 
+# # Number of descriptor to test at branch split
+# tuneRF(data[,-c(1,2)], data$CLASS_SAN3, ntreeTry=400, stepFactor=2, improve=0.01,trace=TRUE, plot=TRUE, doBest=FALSE)
 
-## Number of descriptor to test at branch split
-tuneRF(data[,-c(1,2)], data$CLASS_SAN3, ntreeTry=400, stepFactor=2, improve=0.01,trace=TRUE, plot=TRUE, doBest=FALSE)
-
+# randomForest::varImpPlot(model, sort=FALSE, main=paste0("Variable Importance Plot at ",SIM_FOLDER," m"))
 
 ## Visualize proximity in dataset
 # corrplot(rf$proximity[train$CLASS_SAN3==10, train$CLASS_SAN3==20], method='color', is.corr=FALSE) # show proximity
 
 
-## k-fold version
+## k-fold tuning ##
+i=0
 train_control<- trainControl(method="cv", number=5, sampling="up", summaryFunction = mySummary)
-tuneGrid <- expand.grid(.mtry = c(6: 10))
+ntree <- seq(100,1000,100)
 
-model<- train(CLASS_SAN3~., data=train, trControl=train_control, tuneGrid=tuneGrid, metric="fdr",method="rf", ntree=2000, cutoff=CUTOFF)
-model
+# line 105 to 149 may be run several times to check the stability of the outputs
+tuning <- sapply(ntree, function(ntr){
+  tuneGrid <- expand.grid(.mtry = c(5: 11))
+  model <- train(CLASS_SAN3~., data=train, trControl=train_control, 
+                 tuneGrid=tuneGrid, metric="fdr", method="rf", ntree=ntr, 
+                 cutoff=CUTOFF,importance=TRUE, maximize=FALSE)
+  var_imp=caret::varImp(model)
+  accuracy <- sum(predict(model,test) == test$CLASS_SAN3)/length(test$CLASS_SAN3)
+  cf <- confusionMatrix(predict(model,test), test$CLASS_SAN3)
+  fdr <- (cf[["table"]][1,2]+cf[["table"]][1,3]+cf[["table"]][2,3])/sum(cf[["table"]][,2:3]) #false detection rate
+  return(c(accuracy,fdr,model,var_imp))
+})
 
-predictions<- predict(model,test)
-confusionMatrix(predictions, test$CLASS_SAN3)
+i=i+1
+tiff(file=paste0(SIM_DIR,i,"_Accuracy.tif"),res=100,width = 1000, height = 500)
+plot(ntree, tuning[1,], xlab = "Number of trees", ylab = "Accuracy",main = "Best RF models vs. number of trees")
+text(ntree, as.numeric(tuning[1,])-0.002, labels=tuning[8,])
+dev.off()
+
+tiff(file=paste0(SIM_DIR,i,"_CustomMetric.tif"),res=100,width = 1000, height = 500)
+plot(ntree, tuning[2,], xlab = "Number of trees", ylab = "Custom metric (to minimize)",main = "Best RF models vs. number of trees")
+text(ntree, as.numeric(tuning[2,])-0.002, labels=tuning[8,])
+dev.off()
+
+########## MANUAL CHANGE HERE ###########
+# Chose the best model
+best_model<-tuning[,4]
+########## MANUAL CHANGE HERE ###########
+
+tiff(file=paste0(SIM_DIR,i,"_VarImp.tif"),res=100, width = 1000, height = 1000)
+plot(best_model$finalModel$importance[,5],row.names(best_model$finalModel$importance[,1]),
+     xlab = "Descriptor index", ylab = "Mean Decrease in Gini's index",main = "Descriptors importance")
+text(best_model$finalModel$importance[,5]-0.1,row.names(best_model$finalModel$importance[,1]),labels=row.names(best_model$finalModel$importance),cex=0.75)
+dev.off()
+
+out<-best_model$results
+cM <-confusionMatrix(predict(best_model$finalModel,test), test$CLASS_SAN3)
+
+out_fname = paste0(SIM_DIR,i,"_out.csv")
+cM_fname = paste0(SIM_DIR,i,"_cM.csv")
+desc_fname = paste0(SIM_DIR,i,"_desc.csv")
+
+write.table(out, file = out_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
+write.table(cM$table, file = cM_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
+write.table(cbind(row.names(best_model$finalModel$importance),best_model$finalModel$importance[,5]), file = desc_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
 
 
-
-### --------------- begin loop ablation study --------------------------###
-
-#> Hypothèse : on a différent types de paramètres (NDVI, VHI, structuraux, images).
-#> Je veux vérifier lesquels aident à classifier correctement, lesquels brouillent 
-#> le signal.  
-#> Baseline : tous là pour une catégorie, j'en enlève un à la fois. 
-#>
-
-
-# list_sim = c("san","1617", "1718", "1819", "1920", "2021", "2122")
-# list_sim = c("san","zq99","alpha","beta","cvLAD","VCI","CC","sdCC","sdchm","agl")
-# list_sim = c("san","16", "17", "18", "19", "20", "21","22")
-# list_sim = c("san","1617", "1718", "1819", "1920", "2021", "2122","16", "17", "18", "19", "20", "21","22","zq99","alpha","beta","cvLAD","VCI","CC","sdCC","sdchm","agl")
-list_sim = names(train)
-l = length(list_sim)
-
-
-# sample csv name
-file.remove("C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/metrics.csv")
-csv_fname = "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/metrics.csv"
-# writing row in the csv file
-write.table(data.frame("SIM_FOLDER", "ablation", "OA","TPR[sain]", "TPR[declin]", "TPR[mort]"), file = csv_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
-
-rf <- randomForest(CLASS_SAN3~., data=train, ntree=500, proximity=TRUE, cutoff=CUTOFF)
-# writing row in the csv file
-row <- data.frame(SIM_FOLDER, 'baseline', OA,TPR[1], TPR[2], TPR[3])
-write.table(row, file = csv_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
-
-
-for (i in 2:l){ 
-  
-  rf <- randomForest(CLASS_SAN3~., data=train[,-c(i)], ntree=500, proximity=TRUE, cutoff=CUTOFF)
-  
-  ## Variable importance ##
-  
-  tiff(file=paste0(SIM_DIR,list_sim[i],"VarImp.tif"),res=100)
-  randomForest::varImpPlot(rf, sort=FALSE, main=paste0("Variable Importance Plot at ",SIM_FOLDER," m"))
-  dev.off()
-  
-  
-  ### Test model and outputs ###
-  
-  p1 <- predict(rf, test[,-c(i)])
-  cM<-confusionMatrix(p1, test$CLASS_SAN3)
-  OA <- as.data.frame(cM["overall"])[1,1]
-  TPR <- as.data.frame(cM["byClass"])[,1]
-  row <- data.frame(SIM_FOLDER, list_sim[i], OA,TPR[1], TPR[2], TPR[3])
-  cM
-  
-  # sample csv name
-  csv_fname = "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/metrics.csv"
-  
-  # writing row in the csv file
-  write.table(row, file = csv_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
-  
-  ## Output prediction for visualization ##
-  pred_out<-cbind(test_out[,c("NO_ARBRE")],p1)
-  GT_merge <- merge(GT,pred_out, all.x=TRUE, by.x=c('NO_ARBRE'), by.y=c('V1'))
-  
-  writeVector(vect(GT_merge),paste0(SIM_DIR,list_sim[i],"pred_out.shp"), filetype=NULL, layer=NULL, insert=FALSE,overwrite=TRUE, options="ENCODING=UTF-8")
-
-}
-
-###---------------------------------------------------------------------------------
