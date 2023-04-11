@@ -8,9 +8,9 @@ The scripts all define a working folder. They will create the `processed` and `f
 ```
 .                   # Working folder
 ├── initial         # initial data from outside sources
-    └── True_ortho
-        └── Tiles
-            └── tiles for north AND south
+|   └── True_ortho
+|       └── Tiles
+|           └── tiles for north AND south
 ├── processed       # transitory data produced by the scripts
 └── final           # final data for the documentation and the beneficiaries
 ```
@@ -19,7 +19,7 @@ The scripts all define a working folder. They will create the `processed` and `f
 The following method and scripts were tested on a linux system.
 
 #### Preprocessing
-Once a python environment is created, ensure you have GDAL for Python installed (see commands below). Then, the necessary libraries can be installed with pip using the file `requirements.txt`.
+Once a python environment is created, ensure you have GDAL for Python installed (see commands below). Then, the necessary libraries can be installed with pip using the file `requirements.txt`. <br>
 The base images can be processed to produce images with the NDVI value. Those are used if we choose to filter the images based on thresholds and to calculate the statistics per tree.
 
 ```
