@@ -3,7 +3,6 @@ kaleido
 loguru
 matplotlib
 pandas
-pip-tools
 plotly
 PyYAML
 rasterio

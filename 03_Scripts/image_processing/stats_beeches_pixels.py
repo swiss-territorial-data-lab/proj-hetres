@@ -27,7 +27,7 @@ WORKING_DIR=cfg['working_directory']
 DESTINATION_DIR=cfg['destination_directory']
 INPUTS=cfg['inputs']
 
-ORTHO_DIR=INPUTS['ortho']
+ORTHO_DIR=INPUTS['ortho_directory']
 NORTH_CHM=INPUTS['north_chm']
 SOUTH_CHM=INPUTS['south_chm']
 
@@ -122,7 +122,8 @@ pixels_beeches.loc[pixels_beeches['health_status']=='sain', 'health_status']='1.
 pixels_beeches.loc[pixels_beeches['health_status']=='malade', 'health_status']='2. malade'
 pixels_beeches.loc[pixels_beeches['health_status']=='mort', 'health_status']='3. mort'
 
-pixels_beeches=pixels_beeches[pixels_beeches['NDVI']<0.90]
+if ORIGINAL_ORTHO:
+    pixels_beeches=pixels_beeches[pixels_beeches['NDVI']<0.90]
 
 logger.info('Making boxplots...')
 boxplots=pixels_beeches.plot.box(by='health_status',

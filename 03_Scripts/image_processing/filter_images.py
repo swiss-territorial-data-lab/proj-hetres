@@ -42,7 +42,7 @@ tiles=gpd.read_file(TILE_DELIMITATION)
 if ORIGINAL_ORTHO:
     tiles=fct_misc.get_ortho_tiles(tiles)
 else:
-    ORTHO_DIR=cfg['ortho_dir']
+    ORTHO_DIR=cfg['ortho_directory']
     tiles['path_RGB']=[os.path.join(ORTHO_DIR, name + '_filtered.tif') for name in tiles['NAME'].values]
 
 bands=range(1,5)

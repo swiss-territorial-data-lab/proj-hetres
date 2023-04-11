@@ -26,7 +26,7 @@ with open('03_Scripts/image_processing/config.yaml') as fp:
 
 logger.info('Defining constants...')
 
-USE_FILTER=cfg['use_filter']
+USE_FILTER=cfg['use_high_filter']
 WORKING_DIR=cfg['working_directory']
 INPUTS=cfg['inputs']
 
