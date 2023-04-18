@@ -57,8 +57,7 @@ if __name__ == "__main__":
     WORKING_DIR=cfg['working_directory']
 
     INPUTS=cfg['inputs']
-    NORTH_ORTHO=INPUTS['north_ortho']
-    SOUTH_ORTHO=INPUTS['south_ortho']
+    ORTHO=INPUTS['ortho_directory']
 
     TILE_DELIMITATION=INPUTS['tile_delimitation']
 
@@ -67,13 +66,11 @@ if __name__ == "__main__":
 
     logger.info('Reading files...')
     
-    tile_list_north=glob(os.path.join(NORTH_ORTHO, '*.tif'))
-    tile_list_south=glob(os.path.join(SOUTH_ORTHO, '*.tif'))
+    tile_list_ortho=glob(os.path.join(ORTHO, '*.tif'))
     aoi_tiles=gpd.read_file(TILE_DELIMITATION)
 
     tile_list=[]
-    tile_list.extend(tile_list_north)
-    tile_list.extend(tile_list_south)
+    tile_list.extend(tile_list_ortho)
 
     for tile in tqdm(tile_list, 'Processing tiles'):
         ndvi_tile_path=os.path.join('processed/NDVI', tile.split('/')[-1].replace('ortho_JUHE_LV95_NF02_3cm', 'NDVI'))
