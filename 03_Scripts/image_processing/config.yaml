@@ -1,12 +1,12 @@
 calculate_ndvi.py:
-  working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/review/proj-hetres/03_scripts/
   inputs:
-    ortho_dir: initial/True_ortho/Tiles
+    ortho_directory: initial/True_ortho/Tiles/
     tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp
 
 stats_beeches_pixels.py:
   original_ortho: true
-  working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/review/proj-hetres/03_scripts/
   destination_directory: final/original/
   inputs:
     ortho_directory: initial/True_ortho/Tiles
@@ -18,18 +18,18 @@ stats_beeches_pixels.py:
 
 stats_per_tree.py:
   use_high_filter: true
-  working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/review/proj-hetres/03_scripts/
   inputs:
     north_chm: processed/CHM/CHM_binary_beurnevesin.tif
     south_chm: processed/CHM/CHM_binary_miecourt.tif
     tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp
-    beech_file: processed/trees/ok_trees.gpkg
+    beech_file: processed/trees/ok_trees.gpkg # processed/trees/mosaic_seg_params_2056.shp #
     beech_layer: ok_trees_20_40_m
 
 filter_images.py:
   original_ortho: true
-  filter_type: thresholds    # valid values: "gaussian", "downsampling", "sieve" and "thresholds"
-  working_directory: /mnt/data-01/gsalamin/deperissement-hetre/
-  # ortho_directory: processed/filtered_images/downsampling_1on17
+  filter_type: "sieve"    # valid values: "gaussian", "downsampling", "sieve" and "thresholds"
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/review/proj-hetres/03_scripts/
+  ortho_directory: processed/filtered_images/downsampling_1on17
   destination_directory: final/filtered_images/3_colors
   tile_delimitation: initial/AOI/AOI_tiles/AOI_GT.shp

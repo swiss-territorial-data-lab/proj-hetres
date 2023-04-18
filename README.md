@@ -3,7 +3,7 @@
 ## Image processing
 
 ### Structure
-The scripts all define a working folder. They will create the `processed` and `final` folders for their outputs. We recommend using the following directory structure:
+All the scripts refere to the same working folder. They will create the `processed` and `final` folders for their outputs. We recommend using the following directory structure:
 
 ```
 .                   # Working folder
@@ -16,15 +16,26 @@ The scripts all define a working folder. They will create the `processed` and `f
 ```
 
 ### Getting started
-The following method and scripts were tested on a linux system.
+The following method and scripts were tested on a linux system and on Windows 11 with Conda. 
 
-#### Preprocessing
+
+#### Environment installation
 Once a python environment is created, ensure you have GDAL for Python installed (see commands below). Then, the necessary libraries can be installed with pip using the file `requirements.txt`. <br>
-The base images can be processed to produce images with the NDVI value. Those are used if we choose to filter the images based on thresholds and to calculate the statistics per tree.
-
 ```
 sudo apt-get install -y python3-gdal gdal-bin libgdal-dev gcc g++ python3.8-dev
 pip install -r requirements.txt
+```
+
+Some precision in case of use of Conda :
+```
+create --name name_branch python=3.8 
+conda install gdal
+```
+
+#### Preprocessing
+The base images can be processed to produce images with the NDVI value. Those are used if we choose to filter the images based on thresholds and to calculate the statistics per tree.
+
+```
 python3 03_Scripts/image_processing/calculate_ndvi.py
 ```
 

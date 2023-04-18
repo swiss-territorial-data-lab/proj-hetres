@@ -90,7 +90,7 @@ def calculate_pca(dataset, features, to_describe, label_pc):
 
     - dataset: dataset from which the PCA will be calculated
     - features: decriptive variables of the dataset (must be numerical only)
-    - to_describe: explenatory variables or the variables to describe with the PCA (FOR NOW, ONLY ONE EXPLENATORY VARIALBE CAN BE PASSED)
+    - to_describe: responses variables or the variables to describe with the PCA (FOR NOW, ONLY ONE RESPONSE VARIALBE CAN BE PASSED)
     - label_pc: labels for the principal components
 
     return: a sklearn PCA object and an array of the new coordinates.
@@ -121,7 +121,7 @@ def plot_pca(coor, results, model,
     - results: dataframe with the new coordinates in the space of the PC
     - pca: sklearn pca or lda object
     - features: decriptive variables of the dataset (must be numerical only)
-    - targets: classes of interest in the explenatory variable.
+    - targets: classes of interest in the response variable.
     - pc_to_plot: number of principal components to plot
     - dirpath_images: directory for the images
     - file_prefix: prefix for the names of the files that will be created
@@ -217,7 +217,7 @@ def pca_procedure(dataset, features, to_describe,
 
     - dataset: dataset from which the PCA will be calculated
     - features: decriptive variables of the dataset (must be numerical only)
-    - to_describe: explenatory variables or the variables to describe with the PCA (FOR NOW, ONLY ONE EXPLENATORY VARIALBE CAN BE PASSED)
+    - to_describe: response variables or the variables to describe with the PCA (FOR NOW, ONLY ONE RESPONSE VARIALBE CAN BE PASSED)
     - dirpath_tables: direcory for the tables
     - dirpath_images: directory for the images
     - file_prefix: prefix for the names of the files that will be created
@@ -272,8 +272,8 @@ def pca_procedure(dataset, features, to_describe,
     # 4 & 5. Plot the graph of the individuals and of the variables
     targets = dataset[to_describe].unique().tolist()
     
-    written_files.extend(plot_pca(coor_PC, results_PCA, pca, features, to_describe, targets, pc_to_plot,
-                                dirpath_images, file_prefix, title_graph))
+   # written_files.extend(plot_pca(coor_PC, results_PCA, pca, features, to_describe, targets, pc_to_plot,
+    #                            dirpath_images, file_prefix, title_graph))
 
     return written_files
 
