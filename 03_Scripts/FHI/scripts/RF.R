@@ -77,7 +77,7 @@ test <- subset(test_out, select = -c(1))
 ## Single RF ##
 
 # # train <- upSample(train, train$CLASS_SAN3)[,-c(67)] #downSample 
-# rf <- randomForest(CLASS_SAN3~., data=train, nree=500, proximity=TRUE, cutoff=CUTOFF)
+# rf <- randomForest(CLASS_SAN3~., data=train, ntree=500, proximity=TRUE, cutoff=CUTOFF)
 # p1<-predict(rf,test)
 # cM <-confusionMatrix(p1, test$CLASS_SAN3)
 # confusionMatrix(p1, test$CLASS_SAN3)
@@ -99,7 +99,7 @@ test <- subset(test_out, select = -c(1))
 
 ## k-fold tuning ##
 i=0
-train_control<- trainControl(method="cv", number=5, sampling="up", summaryFunction = mySummary)
+train_control <- trainControl(method="cv", number=5, sampling="up", summaryFunction = mySummary)
 ntree <- seq(100,1000,100)
 
 # line 105 to 149 may be run several times to check the stability of the outputs
@@ -107,8 +107,8 @@ tuning <- sapply(ntree, function(ntr){
   tuneGrid <- expand.grid(.mtry = c(5: 11))
   model <- train(CLASS_SAN3~., data=train, trControl=train_control, 
                  tuneGrid=tuneGrid, metric="fdr", method="rf", ntree=ntr, 
-                 cutoff=CUTOFF,importance=TRUE, maximize=FALSE)
-  var_imp=caret::varImp(model)
+                 cutoff=CUTOFF, importance=TRUE, maximize=FALSE)
+  var_imp <- caret::varImp(model)
   accuracy <- sum(predict(model,test) == test$CLASS_SAN3)/length(test$CLASS_SAN3)
   cf <- confusionMatrix(predict(model,test), test$CLASS_SAN3)
   fdr <- (cf[["table"]][1,2]+cf[["table"]][1,3]+cf[["table"]][2,3])/sum(cf[["table"]][,2:3]) #false detection rate
