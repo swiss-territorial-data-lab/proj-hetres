@@ -18,6 +18,6 @@ production:
  SIM_FOLDER: "res2p5_segHmax/"
  RES_CELL: 2.5
  PATH_GT: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/GT/GT_Z_beechesAOI_corr_attribute_point_vhi.shp"
- SIM_STATS: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/02_data/aerial/"
+ SIM_STATS_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/02_data/aerial/"
  DESCRIPTORS: "all" # all, NDVI_diff, VHI, Structural params, Stats&PCA
  CUTOFF: [0.33,0.33,0.33]
