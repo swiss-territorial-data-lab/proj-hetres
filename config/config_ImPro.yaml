@@ -5,18 +5,6 @@ calculate_ndvi.py:
     ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi
     tile_delimitation: data/01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056_sub.shp
 
-stats_beeches_pixels.py:
-  original_ortho: false
-  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/
-  destination_directory: data/03_final/true_orthophoto/original/original
-  inputs:
-    ortho_directory: data/01_initial/true_orthophoto/original
-    tile_delimitation: data/02_intermediate/AOI/AOI_GT.shp
-    north_chm: data/02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_chm.tif
-    south_chm: data/02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_chm.tif
-    beech_file: data/02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg
-    beech_layer: all_trees
-
 stats_per_tree.py:
   use_height_filter: true
   working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/
