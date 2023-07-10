@@ -152,7 +152,7 @@ LAS point cloud segmentation in individual trees is performed using the Digital 
 
 ### Structural descriptors computation 
 Structural descriptors are computed via RStudio, partly after the article from P. Meng et al (2022), DOI: 10.1080/17538947.2022.2059114:
-*In RStudio, run the script /scripts/FHI/FHI_catalog.R with the correct parameter value in the the config file `/config/config_FHI.yml`
+* In RStudio, run the script /scripts/FHI/FHI_catalog.R with the correct parameter value in the the config file `/config/config_FHI.yml`
 	* When processing original data
 	```
 	 DIR_LAS: "C:/.../proj-hetres/data/02_intermediate/lidar_point_cloud/original/dft_outputs/"
@@ -181,21 +181,21 @@ Image processing is performed on RGBNIR images to extract health information. Co
 	* Don’t use the height filter, since the polygons are adjusted on the crown. 
 	* Specify parameters in  the `/confi/config_ImPro.yaml` config file: 
 	```
-		use_height_filter: false
-		ortho_directory: data/01_initial/true_orthophoto/original/tiles/
-		ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi/
-		output_directory: data/02_intermediate/true_orthophoto/original/
-		beech_file: data/02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg
+	use_height_filter: false
+	ortho_directory: data/01_initial/true_orthophoto/original/tiles/
+	ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi/
+	output_directory: data/02_intermediate/true_orthophoto/original/
+	beech_file: data/02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg
 	```	
 * Compute stats (min, max, mean, median, std) per band for the segmented trees by running the script `stat_per_tree_seg.py` 
 	* Use the height filter to mask understory pixels. 
 	* Specify parameters in  the `/confi/config_ImPro.yaml` config file: 
 	```
-		use_height_filter: true
-		ortho_directory: data/02_intermediate/true_orthophoto/downsampled/tiles/
-		ndvi_directory: data/02_intermediate/true_orthophoto/downsampled/ndvi/
-		output_directory: data/02_intermediate/true_orthophoto/downsampled/
-		beech_file: data/02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp
+	use_height_filter: true
+	ortho_directory: data/02_intermediate/true_orthophoto/downsampled/tiles/
+	ndvi_directory: data/02_intermediate/true_orthophoto/downsampled/ndvi/
+	output_directory: data/02_intermediate/true_orthophoto/downsampled/
+	beech_file: data/02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp
 	```	
 
 ### Random Forest
