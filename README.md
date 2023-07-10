@@ -138,15 +138,15 @@ LAS point cloud segmentation in individual trees is performed using the Digital 
 	* Move content of the folder in the folder `/scripts/DFT`
 * Check the input paths in the Matlab/Octave script `funPeaks_batch.m`
 	* When processing original data
-```
-DIR_IN = 'C:\...\proj-hetres\data\01_initial\lidar_point_cloud\original\'
-DIR_OUT = 'C:\...\proj-hetres\data\02_intermediate\lidar_point_cloud\original\dft_outputs\'
-```
-* When processing subsampled data
-```
-DIR_IN = 'C:\...\proj-hetres\data\02_intermediate\lidar_point_cloud\downsampled\'
-DIR_OUT = 'C:\...\proj-hetres\data\02_intermediate\lidar_point_cloud\downsampled\dft_outputs\' 
-```
+	```
+	DIR_IN = 'C:\...\proj-hetres\data\01_initial\lidar_point_cloud\original\'
+	DIR_OUT = 'C:\...\proj-hetres\data\02_intermediate\lidar_point_cloud\original\dft_outputs\'
+	```
+	* When processing subsampled data
+	```
+	DIR_IN = 'C:\...\proj-hetres\data\02_intermediate\lidar_point_cloud\downsampled\'
+	DIR_OUT = 'C:\...\proj-hetres\data\02_intermediate\lidar_point_cloud\downsampled\dft_outputs\' 
+	```
 * Run the Matlab/Octave script `funPeaks_batch.m` in Octave or Matlab
 
 
@@ -154,63 +154,63 @@ DIR_OUT = 'C:\...\proj-hetres\data\02_intermediate\lidar_point_cloud\downsampled
 Structural descriptors are computed via RStudio, partly after the article from P. Meng et al (2022), DOI: 10.1080/17538947.2022.2059114:
 *In RStudio, run the script /scripts/FHI/FHI_catalog.R with the correct parameter value in the the config file `/config/config_FHI.yml`
 	* When processing original data
-```
- DIR_LAS: "C:/.../proj-hetres/data/02_intermediate/lidar_point_cloud/original/dft_outputs/"
- SIM_DIR: "C:/.../proj-hetres/data/02_intermediate/lidar_point_cloud/original/fhi_outputs/"
-```
+	```
+	 DIR_LAS: "C:/.../proj-hetres/data/02_intermediate/lidar_point_cloud/original/dft_outputs/"
+	 SIM_DIR: "C:/.../proj-hetres/data/02_intermediate/lidar_point_cloud/original/fhi_outputs/"
+	```
 	* When processing subsampled data
-```
- DIR_LAS: "C:/.../proj-hetres/data/02_intermediate/lidar_point_cloud/downsampled/dft_outputs/"
- SIM_DIR: "C:/.../proj-hetres/data/02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/"
-```
+	```
+	 DIR_LAS: "C:/.../proj-hetres/data/02_intermediate/lidar_point_cloud/downsampled/dft_outputs/"
+	 SIM_DIR: "C:/.../proj-hetres/data/02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/"
+	```
 
 ### Image processing 
 Image processing is performed on RGBNIR images to extract health information. Correct inputs and outpus directory and files have to be given in the `/confi/config_ImPro.yaml` file:
 * First, compute the NDVI images using R and NIR band by running the script `calculate_ndvi.py`
 	* When processing original data
-```
-ortho_directory: data/01_initial/true_orthophoto/original/tiles
-ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi
-```
+	```
+	ortho_directory: data/01_initial/true_orthophoto/original/tiles
+	ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi
+	```
 	* When processing subsampled data
-```
-ortho_directory: data/02_intermediate/true_orthophoto/downsampled/tiles
-ndvi_directory: data/02_intermediate/true_orthophoto/downsampled/ndvi
-```
+	```
+	ortho_directory: data/02_intermediate/true_orthophoto/downsampled/tiles
+	ndvi_directory: data/02_intermediate/true_orthophoto/downsampled/ndvi
+	```
 * Compute stats (min, max, mean, median, std) per band for the GT trees by running the script `stat_per_tree_gt.py`. 
 	* Don’t use the height filter, since the polygons are adjusted on the crown. 
 	* Specify parameters in  the `/confi/config_ImPro.yaml` config file: 
-```
-	use_height_filter: false
-	ortho_directory: data/01_initial/true_orthophoto/original/tiles/
-    ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi/
-    output_directory: data/02_intermediate/true_orthophoto/original/
-    beech_file: data/02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg
-```	
+	```
+		use_height_filter: false
+		ortho_directory: data/01_initial/true_orthophoto/original/tiles/
+		ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi/
+		output_directory: data/02_intermediate/true_orthophoto/original/
+		beech_file: data/02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg
+	```	
 * Compute stats (min, max, mean, median, std) per band for the segmented trees by running the script `stat_per_tree_seg.py` 
 	* Use the height filter to mask understory pixels. 
 	* Specify parameters in  the `/confi/config_ImPro.yaml` config file: 
-```
-	use_height_filter: true
-	ortho_directory: data/02_intermediate/true_orthophoto/downsampled/tiles/
-    ndvi_directory: data/02_intermediate/true_orthophoto/downsampled/ndvi/
-    output_directory: data/02_intermediate/true_orthophoto/downsampled/
-    beech_file: data/02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp
-```	
+	```
+		use_height_filter: true
+		ortho_directory: data/02_intermediate/true_orthophoto/downsampled/tiles/
+		ndvi_directory: data/02_intermediate/true_orthophoto/downsampled/ndvi/
+		output_directory: data/02_intermediate/true_orthophoto/downsampled/
+		beech_file: data/02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp
+	```	
 
 ### Random Forest
 Preparation of descriptors, training, optimization and prediction.
 * Preparation of descriptor suscessively for the GT trees and the segmented treesMerge. Edit `/config/config_merge.yml` accordingly. 
 	* For GT trees:
-```
-TRAIN_DATA : TRUE
-SIM_STATS_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/01_initial/true_orthophoto/original/tables/gt/"
-```
+	```
+	TRAIN_DATA : TRUE
+	SIM_STATS_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/01_initial/true_orthophoto/original/tables/gt/"
+	```
 	* For segmented trees:
-```
-TRAIN_DATA : FALSE
-SIM_STATS_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/01_initial/true_orthophoto/original/tables/seg/"
-```
+	```
+	TRAIN_DATA : FALSE
+	SIM_STATS_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/01_initial/true_orthophoto/original/tables/seg/"
+	```
 	* Change "original" for "downsampled" everywhere in `/config/config_merge.yml`, to compute corresponding outputs for downgraded data. 
 * The script `RF.R` trains, optimizes and outputs GPKG with prediction for the segmented polygons. 
 * The ground truth analysis was performed using …  
