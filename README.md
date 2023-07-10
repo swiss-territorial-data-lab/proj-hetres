@@ -22,63 +22,62 @@ No specific requirements.
 ## Folder structure
 
 ```
-├── config                                          # config files
-├── data                                            # dataset folder
-    ├── 01_initial                                  # initial data (as delivered)
-        ├── AOI                                     # AOI shape file
-        ├── ground_truth                            # ground truth shape file
-        ├── lidar_point_cloud                       # 
-			└── original                            # original classiefied lidar point cloud
-        └── true_orthophoto                         #
-			└── original                            #
-				└── tiles                           # tiles of the original true orthophoto
-    ├── 02_intermediate                             # intermediate results and processed data
-	    ├── AOI                                     # 
-			└── tiles                               # splitted AOI tiles 
-        ├── ground_truth                            # cleaned ground truth shape files
-        ├── lidar_point_cloud                       # lidar point cloud
-			├── downsampled                         # downsampled lidar point cloud
-				├── dft_outputs                     # DFT outputs for dowsampled LiDAR
-				└── fhi_outputs                     # Forest Health Index outputs for downsampled LiDAR
-			└── original                            # 
-				├── dft_outputs                     # DFT outputs for original
-				└── fhi_outputs                     # Forest Health Index outputs for original
-        ├── rf                                      # random forest descriptors CSV
-        ├── satellite_images                        # 
-			└── ndvi_diff                           # yearly difference of NDVI from waldmonitoring.ch
-        └── true_orthophoto
-			└── downsampled
-				├── images                          # boxplots and PCA histogramms for each bands
-					├── gt                          # ... for ground truth
-					└── seg                         # ... for segmented trees
-				├── ndvi                            # ndvi tiles computed from NRGB tiles
-				├── tables                          # statstics and pca on NRGB-bands
-					├── gt                          # ... for ground truth
-					└── seg                         # ... for segmented trees
-				└── tiles                           # downsampled tiles of the original true orthophoto
-			└── original
-				├── images                          # boxplots and PCA histogramms for each bands
-					├── gt                          # ... for ground truth
-					└── seg                         # ... for segmented trees
-				├── ndvi                            # ndvi tiles computed from NRGB tiles
-				└── tables                          # statstics and pca on NRGB-bands
-					├── gt                          # ... for ground truth
-					└── seg                         # ... for segmented trees
-    ├── 03_final                                    # final data for product delivery
-		└── rf                                      # random forest prediction and trained model
-├── documentation                                   # documentation folder
+├── config                        # config files
+├── data                          # dataset folder
+   ├── 01_initial                 # initial data (as delivered)
+      ├── AOI                     # AOI shape file
+      ├── ground_truth            # ground truth shape file
+      ├── lidar_point_cloud       # 
+         └── original             # original classiefied lidar point cloud
+      └── true_orthophoto         #
+         └── original             #
+            └── tiles             # tiles of the original true orthophoto
+   ├── 02_intermediate            # intermediate results and processed data
+      ├── AOI                     # 
+         └── tiles                # splitted AOI tiles 
+      ├── ground_truth            # cleaned ground truth shape files
+      ├── lidar_point_cloud       # lidar point cloud
+         ├── downsampled          # downsampled lidar point cloud
+            ├── dft_outputs       # DFT outputs for dowsampled LiDAR
+            └── fhi_outputs       # Forest Health Index outputs for downsampled LiDAR
+         └── original             # 
+            ├── dft_outputs       # DFT outputs for original
+            └── fhi_outputs       # Forest Health Index outputs for original
+      ├── rf                      # random forest descriptors CSV
+      ├── satellite_images        # 
+         └── ndvi_diff            # yearly difference of NDVI from waldmonitoring.ch
+      └── true_orthophoto
+         └── downsampled
+            ├── images            # boxplots and PCA histogramms for each bands
+               └── seg            # ... for segmented trees
+            ├── ndvi              # ndvi tiles computed from NRGB tiles
+            ├── tables            # statstics and pca on NRGB-bands
+               ├── gt             # ... for ground truth
+               └── seg            # ... for segmented trees
+              └── tiles           # downsampled tiles of the original true orthophoto
+         └── original
+            ├── images            # boxplots and PCA histogramms for each bands
+               ├── gt             # ... for ground truth
+               └── seg            # ... for segmented trees
+            ├── ndvi              # ndvi tiles computed from NRGB tiles
+            └── tables            # statstics and pca on NRGB-bands
+               ├── gt             # ... for ground truth
+               └── seg            # ... for segmented trees
+   ├── 03_final                   # final data for product delivery
+      └── rf                      # random forest prediction and trained model
+├── documentation                 # documentation folder
 ├── scripts
-    ├── DFT                                         # Digital Forestry Toolbox as downlaoded
-    ├── image_processing                            # set of functions for image processing
-    ├── downloadNDVIdiff.py                         # download the yearly difference of NDVI from the waldmonitoring.ch platform
-    ├── FHI_catalog.R                               # descriptors computation from LiDAR point cloud. 
-    ├── functions.R                                 # self coded functions used in R scripts. 
-    ├── funPeaks.m                                  # script using function from DFT to segment LiDAR point cloud.
-    ├── funPeaks_batch.m                            # script to segment LAS files in a folder 
-    ├── mergeData_inpoly.R                          # prepare descriptors and response variables CSV for RF  
-    ├── RF.R                                        # random Forest routine (dataset split, training, otpimisation, prediction)
-    └── subsampleLAS.py                             # subsample LiDAR point cloude by a factor 5
-└── setup                                           # utility to setup the environment
+   ├── DFT                        # Digital Forestry Toolbox as downlaoded
+   ├── image_processing           # set of functions for image processing
+   ├── downloadNDVIdiff.py        # download the yearly difference of NDVI from the waldmonitoring.ch platform
+   ├── FHI_catalog.R              # descriptors computation from LiDAR point cloud. 
+   ├── functions.R                # self coded functions used in R scripts. 
+   ├── funPeaks.m                 # script using function from DFT to segment LiDAR point cloud.
+   ├── funPeaks_batch.m           # script to segment LAS files in a folder 
+   ├── mergeData_inpoly.R         # prepare descriptors and response variables CSV for RF  
+   ├── RF.R                       # random Forest routine (dataset split, training, otpimisation, prediction)
+   └── subsampleLAS.py            # subsample LiDAR point cloude by a factor 5
+└── setup                         # utility to setup the environment
 ```
 
 ## Scripts and Procedure
