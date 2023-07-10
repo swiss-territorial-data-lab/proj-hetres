@@ -8,23 +8,16 @@ No specific requirements.
 
 ## Software Requirements
 
-* Python 3.8
-
-* Dependencies may be installed with either `pip` or `conda`, by making use of the provided `requirements.txt` file. The following method was tested successfully on a Windows system: 
+* Python 3.8: Dependencies may be installed with either `pip` or `conda`, by making use of the provided `requirements.txt` file. The following method was tested successfully on a Windows system: 
 
     ```bash
     $ conda create -n <the name of the virtual env> -c conda-forge python=3.8
     $ conda activate <the name of the virtual env>
     $ pip install -r requirements.txt
     ```
-* R
+* R: For installation of R, please follow the steps in https://cran.r-project.org/. Afterwards, install the necessary packages for the whole project given in `/setup/environment_R.txt`
 
-* For installation of R, please follow the steps in https://cran.r-project.org/. 
-* Afterwards, install the necessary packages for the whole project given in `/setup/environment_R.txt`
-
-* Octave/Matlab
-
-* For installation of Octave/Matlab, please follow the steps in https://octave.org/download.
+* Octave/Matlab: For installation of Octave/Matlab, please follow the steps in https://octave.org/download.
 
 ## Folder structure
 
@@ -34,45 +27,45 @@ No specific requirements.
     ├── 01_initial                                  # initial data (as delivered)
         ├── AOI                                     # AOI shape file
         ├── ground_truth                            # ground truth shape file
-        ├── lidar_point_cloud                		# 
-			└── original  							# original classiefied lidar point cloud
-        └── true_orthophoto							#
-			└── original							#
-				└── tiles							# tiles of the original true orthophoto
+        ├── lidar_point_cloud                       # 
+			└── original                            # original classiefied lidar point cloud
+        └── true_orthophoto                         #
+			└── original                            #
+				└── tiles                           # tiles of the original true orthophoto
     ├── 02_intermediate                             # intermediate results and processed data
 	    ├── AOI                                     # 
-			└── tiles								# splitted AOI tiles 
+			└── tiles                               # splitted AOI tiles 
         ├── ground_truth                            # cleaned ground truth shape files
-        ├── lidar_point_cloud                		# lidar point cloud
-			├── downsampled							# downsampled lidar point cloud
-				├── dft_outputs  					# DFT outputs for dowsampled LiDAR
-				└── fhi_outputs						# Forest Health Index outputs for downsampled LiDAR
-			└── original  							# 
-				├── dft_outputs  					# DFT outputs for original
-				└── fhi_outputs						# Forest Health Index outputs for original
+        ├── lidar_point_cloud                       # lidar point cloud
+			├── downsampled                         # downsampled lidar point cloud
+				├── dft_outputs                     # DFT outputs for dowsampled LiDAR
+				└── fhi_outputs                     # Forest Health Index outputs for downsampled LiDAR
+			└── original                            # 
+				├── dft_outputs                     # DFT outputs for original
+				└── fhi_outputs                     # Forest Health Index outputs for original
         ├── rf                                      # random forest descriptors CSV
         ├── satellite_images                        # 
-			└── ndvi_diff							# yearly difference of NDVI from waldmonitoring.ch
+			└── ndvi_diff                           # yearly difference of NDVI from waldmonitoring.ch
         └── true_orthophoto
 			└── downsampled
-				├── images  					    # boxplots and PCA histogramms for each bands
-					├── gt  					    # ... for ground truth
-					└── seg							# ... for segmented trees
-				├── ndvi  					        # ndvi tiles computed from NRGB tiles
-				├── tables  					    # statstics and pca on NRGB-bands
-					├── gt  					    # ... for ground truth
-					└── seg							# ... for segmented trees
-				└── tiles							# downsampled tiles of the original true orthophoto
+				├── images                          # boxplots and PCA histogramms for each bands
+					├── gt                          # ... for ground truth
+					└── seg                         # ... for segmented trees
+				├── ndvi                            # ndvi tiles computed from NRGB tiles
+				├── tables                          # statstics and pca on NRGB-bands
+					├── gt                          # ... for ground truth
+					└── seg                         # ... for segmented trees
+				└── tiles                           # downsampled tiles of the original true orthophoto
 			└── original
-				├── images  					    # boxplots and PCA histogramms for each bands
-					├── gt  					    # ... for ground truth
-					└── seg							# ... for segmented trees
-				├── ndvi  					        # ndvi tiles computed from NRGB tiles
-				└── tables  					    # statstics and pca on NRGB-bands
-					├── gt  					    # ... for ground truth
-					└── seg							# ... for segmented trees
+				├── images                          # boxplots and PCA histogramms for each bands
+					├── gt                          # ... for ground truth
+					└── seg                         # ... for segmented trees
+				├── ndvi                            # ndvi tiles computed from NRGB tiles
+				└── tables                          # statstics and pca on NRGB-bands
+					├── gt                          # ... for ground truth
+					└── seg                         # ... for segmented trees
     ├── 03_final                                    # final data for product delivery
-		└── rf										# random forest prediction and trained model
+		└── rf                                      # random forest prediction and trained model
 ├── documentation                                   # documentation folder
 ├── scripts
     ├── DFT                                         # Digital Forestry Toolbox as downlaoded
@@ -81,7 +74,7 @@ No specific requirements.
     ├── FHI_catalog.R                               # descriptors computation from LiDAR point cloud. 
     ├── functions.R                                 # self coded functions used in R scripts. 
     ├── funPeaks.m                                  # script using function from DFT to segment LiDAR point cloud.
-    ├── funPeaks_batch.m               			    # script to segment LAS files in a folder 
+    ├── funPeaks_batch.m                            # script to segment LAS files in a folder 
     ├── mergeData_inpoly.R                          # prepare descriptors and response variables CSV for RF  
     ├── RF.R                                        # random Forest routine (dataset split, training, otpimisation, prediction)
     └── subsampleLAS.py                             # subsample LiDAR point cloude by a factor 5
@@ -118,7 +111,7 @@ The following terminology will be used throughout the rest of this document:
 
 * **descriptors**: other data processed so that they may describe beech tree health state. 
 
-* **AoI**, abbreviation of "Area of Interest": geographical area over which the user intend to carry out the analysis. This area encompasses 
+* **AOI**, abbreviation of "Area of Interest": geographical area over which the user intend to carry out the analysis. This area encompasses 
   * regions for which ground-truth data is available, as well as 
   * regions over which the user intends to detect potentially unknown objects
 
@@ -149,11 +142,15 @@ LAS point cloud segmentation is performed using the Digital Forestry Toolbox on 
 ** Move content of the folder in the folder `/scripts/DFT`
 * Check the input paths in the Matlab/Octave script `funPeaks_batch.m`
 ** When processing original Helimap data
-```DIR_IN = 'C:\Users\cmarmy\Documents\STDL\Beeches\delivery\data\01_initial\lidar_point_cloud\original\'
- DIR_OUT = 'C:\Users\cmarmy\Documents\STDL\Beeches\delivery\data\02_intermediate\lidar_point_cloud\original\dft_outputs\'```
+```
+DIR_IN = 'C:\Users\cmarmy\Documents\STDL\Beeches\delivery\data\01_initial\lidar_point_cloud\original\'
+DIR_OUT = 'C:\Users\cmarmy\Documents\STDL\Beeches\delivery\data\02_intermediate\lidar_point_cloud\original\dft_outputs\'
+```
 * When processing downsampled data
-```DIR_IN = 'C:\Users\cmarmy\Documents\STDL\Beeches\delivery\data\02_intermediate\lidar_point_cloud\downsampled\'
-DIR_OUT = 'C:\Users\cmarmy\Documents\STDL\Beeches\delivery\data\02_intermediate\lidar_point_cloud\downsampled\dft_outputs\' ```
+```
+DIR_IN = 'C:\Users\cmarmy\Documents\STDL\Beeches\delivery\data\02_intermediate\lidar_point_cloud\downsampled\'
+DIR_OUT = 'C:\Users\cmarmy\Documents\STDL\Beeches\delivery\data\02_intermediate\lidar_point_cloud\downsampled\dft_outputs\' 
+```
 * Run the Matlab/Octave script `funPeaks_batch.m` in Octave or Matlab
 
 
@@ -165,17 +162,17 @@ Structural descriptors are computed via RStudio mainly after the article from P.
 Image processing is performed on RGBNIR images to extract health information:
 * First, compute the NDVI images using R and NIR band by running the script `calculate_ndvi.py`
 * Compute stats (min, max, mean, median, std) per band for the GT trees by running the script `stat_per_tree_gt.py`. 
-** Don’t use the height filter, since the polygons are adjusted on the crown. 
-** Change the … in config file. 
+	* Don’t use the height filter, since the polygons are adjusted on the crown. 
+	* Change the … in config file. 
 * Compute stats (min, max, mean, median, std) per band for the segmented trees by running the script `stat_per_tree_seg.py` 
-** Use the height filter to mask understory pixels. 
-** Change the … in config file. 
+	* Use the height filter to mask understory pixels. 
+	* Change the … in config file. 
 
 ### Random Forest
 Preparation of descriptors, training, optimization and prediction.
 * Preparation of descriptor suscessively for the GT trees and the segmented treesMerge. Edit `/config/config_merge.yml` accordingly. 
-** For GT trees:
-** For segmented trees:
+	* For GT trees:
+	* For segmented trees:
 * The script `RF.R` trains, optimizes and outputs GPKG with prediction for the segmented polygons. 
 * The ground truth analysis was performed using …  
 
