@@ -1,0 +1,15 @@
+default:
+ DIR_LAS: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/02_intermediate/lidar_point_cloud/original/dft_outputs/"
+ DIR_EXTENT: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/02_intermediate/AOI/tiles/"
+ NEED_EXTENT: TRUE
+ RES_CELL: 2.5
+ SIM_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/02_intermediate/lidar_point_cloud/original/fhi_outputs/"
+ SIM_FOLDER: "fhi_outputs/"
+
+production:
+ DIR_LAS: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/02_intermediate/lidar_point_cloud/original/dft_outputs/"
+ DIR_EXTENT: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/02_intermediate/AOI/tiles/"
+ NEED_EXTENT: TRUE
+ RES_CELL: 2.5
+ SIM_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/02_intermediate/lidar_point_cloud/original/fhi_outputs/"
+ SIM_FOLDER: "fhi_outputs/"

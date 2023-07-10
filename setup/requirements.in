@@ -1,0 +1,14 @@
+geopandas
+kaleido
+loguru
+matplotlib
+pandas
+plotly
+PyYAML
+rasterio
+rasterstats
+request
+scikit-learn
+tqdm
+owslib
+laspy
