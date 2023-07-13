@@ -1,28 +1,28 @@
 calculate_ndvi.py:
-  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data
   inputs:
-    ortho_directory: data/01_initial/true_orthophoto/original/tiles
-    ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi
-    tile_delimitation: data/01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056_sub.shp
+    ortho_directory: 01_initial/true_orthophoto/original/tiles
+    ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi
+    tile_delimitation: 01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056_sub.shp
 
 stats_per_tree.py:
   use_height_filter: true
-  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data
   inputs:
-    ortho_directory: data/01_initial/true_orthophoto/original/tiles/
-    ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi/
-    output_directory: data/02_intermediate/true_orthophoto/original/
+    ortho_directory: 01_initial/true_orthophoto/original/tiles/
+    ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi/
+    output_directory: 02_intermediate/true_orthophoto/original/
     chm: "C:/Users/cmarmy/Documents/STDL/Beeches/review/proj-hetres/03_Scripts/processed/CHM/CHM_binary_beurnevesin.tif"
-    tile_delimitation: data/01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056_sub.shp # data/02_intermediate/AOI/AOI_GT.shp
-    beech_file: data/02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg # data/02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp #
+    tile_delimitation: 01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056_sub.shp # data/02_intermediate/AOI/AOI_GT.shp
+    beech_file: 02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg # data/02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp #
     beech_layer: all_trees #ok_trees_20_40_m
 
 filter_images.py:
   original_ortho: true
   filter_type: "downsampling"    # valid values: "gaussian", "downsampling", "sieve" and "thresholds"
-  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data
   inputs: 
-    ortho_directory: data/01_initial/true_orthophoto/original/tiles/
-    ndvi_directory: data/02_intermediate/true_orthophoto/original/ndvi/
-  destination_directory: data/02_intermediate/true_orthophoto/downsampled/tiles
-  tile_delimitation: data/01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056_sub.shp
+    ortho_directory: 01_initial/true_orthophoto/original/tiles/
+    ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi/
+  destination_directory: 02_intermediate/true_orthophoto/downsampled/tiles
+  tile_delimitation: 01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056_sub.shp
