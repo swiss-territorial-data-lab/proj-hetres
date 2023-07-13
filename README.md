@@ -1,4 +1,4 @@
-# Automatic estimation of the health state of beech trees in the canton of jura using airborne imagery and LiDAR point cloud
+# Automatic estimation of the health state for trees based on airborne imagery and LiDAR point cloud
 
 This project provides a suite of Python, R and Octave/Matlab scripts allowing the end-user to use Machine Learning to assess beech tree health grade based on orthophoto and LiDAR point cloud. 
 
@@ -23,50 +23,6 @@ No specific requirements.
 
 ```
 ├── config                        # config files
-├── data                          # dataset folder
-   ├── 01_initial                 # initial data (as delivered)
-      ├── AOI                     # AOI shape file
-      ├── ground_truth            # ground truth shape file
-      ├── LiDAR_point_cloud       # 
-         └── original             # original classified LiDAR point cloud
-      └── true_orthophoto         #
-         └── original             #
-            └── tiles             # tiles of the original true orthophoto
-   ├── 02_intermediate            # intermediate results and processed data
-      ├── AOI                     # 
-         └── tiles                # split AOI tiles 
-      ├── ground_truth            # cleaned ground truth shape files
-      ├── lidar_point_cloud       #
-         ├── downsampled          # downsampled LiDAR point cloud
-            ├── dft_outputs       # DFT outputs for dowsampled LiDAR point cloud
-            └── fhi_outputs       # Forest Health Index outputs for downsampled LiDAR point cloud
-         └── original             # 
-            ├── dft_outputs       # DFT outputs for original LiDAR point cloud
-            └── fhi_outputs       # Forest Health Index outputs for original LiDAR point cloud
-      ├── rf                      # random forest descriptors table
-      ├── satellite_images        # 
-         └── ndvi_diff            # yearly difference of NDVI from waldmonitoring.ch
-      └── true_orthophoto
-         └── downsampled
-            ├── images            # boxplots and PCA for each bands
-               ├── gt             # ... for ground truth
-               └── seg            # ... for segmented trees
-            ├── ndvi              # NDVI tiles computed from NRGB tiles
-            ├── tables            # statstics and pca on NRGB-bands
-               ├── gt             # ... for ground truth
-               └── seg            # ... for segmented trees
-              └── tiles           # downsampled tiles of the original true orthophoto
-         └── original
-            ├── images            # boxplots and PCA histogramms for each bands
-               ├── gt             # ... for ground truth
-               └── seg            # ... for segmented trees
-            ├── ndvi              # NDVI tiles computed from NRGB tiles
-            └── tables            # statstics and pca on NRGB-bands
-               ├── gt             # ... for ground truth
-               └── seg            # ... for segmented trees
-   ├── 03_final                   # final data for product delivery
-      └── rf                      # random forest prediction and trained model
-├── documentation                 # documentation folder
 ├── scripts
    ├── DFT                        # Digital Forestry Toolbox as downloaded
    ├── image_processing           # set of functions for image processing
@@ -225,7 +181,10 @@ The ground truth analysis was performed using …
 
 ## Addendum
 
-### Data preparation 
+### Documentation
+The full documentation of the project is available on the STDL's technical website: **give link here...**
+
+### Data 
 
 #### Ground truth 
 
@@ -240,3 +199,52 @@ The ground truth consists of beech trees with location and health state.
 * Delineation of some tree crowns by hand, estimation of other tree crowns with a buffer in function of height around coordinates. 
 * Conversion of 5 health classes (healthy, a bit unhealthy, middle unhealthy, very unhealthy, dead) to 3 classes (healthy, unhealthy, dead)
 
+### Structure
+
+The script expect to find the data in the project folder following the structure presented here below.
+
+```
+├── data                          # dataset folder
+   ├── 01_initial                 # initial data (as delivered)
+      ├── AOI                     # AOI shape file
+      ├── ground_truth            # ground truth shape file
+      ├── LiDAR_point_cloud       # 
+         └── original             # original classified LiDAR point cloud
+      └── true_orthophoto         #
+         └── original             #
+            └── tiles             # tiles of the original true orthophoto
+   ├── 02_intermediate            # intermediate results and processed data
+      ├── AOI                     # 
+         └── tiles                # split AOI tiles 
+      ├── ground_truth            # cleaned ground truth shape files
+      ├── lidar_point_cloud       #
+         ├── downsampled          # downsampled LiDAR point cloud
+            ├── dft_outputs       # DFT outputs for dowsampled LiDAR point cloud
+            └── fhi_outputs       # Forest Health Index outputs for downsampled LiDAR point cloud
+         └── original             # 
+            ├── dft_outputs       # DFT outputs for original LiDAR point cloud
+            └── fhi_outputs       # Forest Health Index outputs for original LiDAR point cloud
+      ├── rf                      # random forest descriptors table
+      ├── satellite_images        # 
+         └── ndvi_diff            # yearly difference of NDVI from waldmonitoring.ch
+      └── true_orthophoto
+         └── downsampled
+            ├── images            # boxplots and PCA for each bands
+               ├── gt             # ... for ground truth
+               └── seg            # ... for segmented trees
+            ├── ndvi              # NDVI tiles computed from NRGB tiles
+            ├── tables            # statstics and pca on NRGB-bands
+               ├── gt             # ... for ground truth
+               └── seg            # ... for segmented trees
+              └── tiles           # downsampled tiles of the original true orthophoto
+         └── original
+            ├── images            # boxplots and PCA for each bands
+               ├── gt             # ... for ground truth
+               └── seg            # ... for segmented trees
+            ├── ndvi              # NDVI tiles computed from NRGB tiles
+            └── tables            # statstics and pca on NRGB-bands
+               ├── gt             # ... for ground truth
+               └── seg            # ... for segmented trees
+   ├── 03_final                   # final data for product delivery
+      └── rf                      # random forest prediction and trained model
+```
