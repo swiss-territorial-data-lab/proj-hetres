@@ -8,7 +8,7 @@ import pandas as pd
 from loguru import logger
 from glob import glob
 
-sys.path.insert(1, 'scripts/image_processing')
+sys.path.insert(1, 'scriptsm')
 import functions.fct_misc as fct_misc
 from functions.fct_stats import pca_procedure
 

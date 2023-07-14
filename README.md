@@ -70,9 +70,9 @@ The following abbreviations are used:
 ### Data preparation
 
 ```
-python /scripts/data_preparation/downloadNDVIdiff.py
-python /scripts/data_preparation/subsampleLAS.py
-python /script/image_processing/filter_images.py
+python scripts/data_preparation/downloadNDVIdiff.py
+python scripts/data_preparation/subsampleLAS.py
+python scripts/image_processing/filter_images.py
 ```
 
 Those code lines performs the following tasks:

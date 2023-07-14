@@ -13,7 +13,7 @@ from rasterio.enums import Resampling
 import scipy
 from scipy.ndimage import binary_dilation
 
-sys.path.insert(1, 'scripts/image_processing')
+sys.path.insert(1, 'scripts')
 import functions.fct_misc as fct_misc
 
 logger=fct_misc.format_logger(logger)

@@ -10,7 +10,7 @@ import geopandas as gpd
 import pandas as pd
 from rasterstats import zonal_stats
 
-sys.path.insert(1, 'scripts/image_processing')
+sys.path.insert(1, 'scripts')
 import functions.fct_misc as fct_misc
 from functions.fct_stats import pca_procedure
 
