@@ -8,12 +8,12 @@ from os import chdir
 from owslib.wcs import WebCoverageService
 
 sys.path.insert(1, 'scripts')
-import functions.fct_misc as fct_misc
+from functions.fct_misc import ensure_dir_exists
 
 WORKING_DIR='C:/Users/gwena/Documents/STDL/2_En_cours/deperissement-hetres/02_Data'
 chdir(WORKING_DIR)
 
-output_folder = fct_misc.ensure_dir_exists('02_intermediate/satellite_images/ndvi_diff/')
+output_folder = ensure_dir_exists('02_intermediate/satellite_images/ndvi_diff/')
 
 wcs = WebCoverageService('https://geoserver.karten-werk.ch/wcs?request=GetCapabilities', version='1.0.0')
 
