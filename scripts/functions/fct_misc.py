@@ -259,11 +259,13 @@ def clip_labels(labels_gdf, tiles_gdf, fact=0.99):
 
     return clipped_labels_gdf
 
-def get_ortho_tiles(tiles, FOLDER_PATH_IN, FOLDER_PATH_OUT, WORKING_DIR=None):
+def get_ortho_tiles(tiles, PATH_ORIGINAL, PATH_NDVI, WORKING_DIR=None):
     '''
     Get the true orthorectified tiles and the corresponding NDVI file based on the tile name.
 
     - tiles: dataframe of with the delimitation and the id of the file.
+    - PATH_ORIGINAL: path to the original tiles
+    - PATH_NDVI: path to the NDVI tiles
     - WORKING_DIR: working directory to be set (if needed)
     return: the tile dataframe with an additional field with the path to each file.
     '''
@@ -276,12 +278,12 @@ def get_ortho_tiles(tiles, FOLDER_PATH_IN, FOLDER_PATH_OUT, WORKING_DIR=None):
 
     for tile_name in tiles['NAME'].values:
         if tile_name.startswith('257'):
-            rgb_pathes.append(os.path.join(FOLDER_PATH_IN, tile_name + '.tif'))
-            ndvi_pathes.append(os.path.join(FOLDER_PATH_OUT, tile_name + '_NDVI.tif'))
+            rgb_pathes.append(os.path.join(PATH_ORIGINAL, 'North_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
+            ndvi_pathes.append(os.path.join(PATH_NDVI, tile_name + '_NDVI.tif'))
 
         elif tile_name.startswith('258'):
-            rgb_pathes.append(os.path.join(FOLDER_PATH_IN, tile_name + '.tif'))
-            ndvi_pathes.append(os.path.join(FOLDER_PATH_OUT, tile_name + '_NDVI.tif'))
+            rgb_pathes.append(os.path.join(PATH_ORIGINAL, 'South_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
+            ndvi_pathes.append(os.path.join(PATH_NDVI, tile_name + '_NDVI.tif'))
 
     tiles['path_RGB']=rgb_pathes
     tiles['path_NDVI']=ndvi_pathes

@@ -11,9 +11,9 @@ No specific requirements.
 * Python 3.8: Dependencies may be installed with either `pip` or `conda`, by making use of the provided `requirements.txt` file. The following method was tested successfully on a Windows system: 
 
     ```bash
-    $ conda create -n <the name of the virtual env> -c conda-forge python=3.8
+    $ conda create -n <the name of the virtual env> -c conda-forge python=3.10 gdal
     $ conda activate <the name of the virtual env>
-    $ pip install -r requirements.txt
+    $ pip install -r setup/requirements.txt
     ```
 * R: For installation of R, please follow the steps in https://cran.r-project.org/. Afterwards, install the necessary packages given in the script `/setup/environment.R`. To do that, run the mentioned script in RStudio.
 

@@ -43,7 +43,7 @@ if __name__ == "__main__":
     list_name = []
     list_las = []
 
-    for files in os.walk(PATH_IN).next()[2]:
+    for _, _, files in os.walk(PATH_IN):
         for name in files:
             if fnmatch(name, pattern):
                 list_name.append(name)

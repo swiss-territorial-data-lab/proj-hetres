@@ -130,16 +130,7 @@ for tile in tqdm(tiles.itertuples(), desc='Filtering tiles', total=tiles.shape[0
         gdal.SieveFilter(srcBand=band, maskBand=None, dstBand=band, threshold=50, connectedness=8)
 
         arr = band.ReadAsArray()
-        # [rows, cols] = arr.shape
-
-        # driver = gdal.GetDriverByName("GTiff")
-        # outdata = driver.Create(os.path.join(DESTINATION_DIR, tile.NAME+'_filtered.tif'), cols, rows, 1, gdal.GDT_Byte)
-        # outdata.SetGeoTransform(conditional_im.GetGeoTransform())   ##sets same geotransform as input
-        # outdata.SetProjection(conditional_im.GetProjection())       ##sets same projection as input
-        # outdata.GetRasterBand(1).WriteArray(arr)
-
         del conditional_im
-        # del outdata
 
         condition_band=binary_dilation(arr, iterations=20)
 
