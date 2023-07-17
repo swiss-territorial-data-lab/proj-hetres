@@ -24,7 +24,7 @@ No specific requirements.
 ```
 ├── config                        # config files
 ├── scripts
-   ├── DFT                        # Digital Forestry Toolbox as downloaded
+   ├── DFT                        # Digital Forestry Toolbox once downloaded
    ├── image_processing           # set of functions for image processing
    ├── downloadNDVIdiff.py        # download the yearly difference of NDVI from the waldmonitoring.ch website
    ├── FHI_catalog.R              # descriptors computation from LiDAR point cloud
@@ -92,29 +92,30 @@ LAS point cloud segmentation in individual trees is performed using the Digital 
 * Check the input paths in the Matlab/Octave script `funPeaks_batch.m`
 	* When processing original data
 	```
-	DIR_IN = 'C:\...\proj-hetres\data\01_initial\LiDAR_point_cloud\original\'
-	DIR_OUT = 'C:\...\proj-hetres\data\02_intermediate\LiDAR_point_cloud\original\dft_outputs\'
+	DIR_IN = '01_initial\LiDAR_point_cloud\original\'
+	DIR_OUT = '02_intermediate\LiDAR_point_cloud\original\dft_outputs\'
 	```
 	* When processing subsampled data
 	```
-	DIR_IN = 'C:\...\proj-hetres\data\02_intermediate\LiDAR_point_cloud\downsampled\'
-	DIR_OUT = 'C:\...\proj-hetres\data\02_intermediate\LiDAR_point_cloud\downsampled\dft_outputs\' 
+	DIR_IN = '02_intermediate\LiDAR_point_cloud\downsampled\'
+	DIR_OUT = '02_intermediate\LiDAR_point_cloud\downsampled\dft_outputs\' 
 	```
+* Add the folder and subfolder of `scripts/DFT/scripts` to the Path (Edit -> Set Path)
 * Run the Matlab/Octave script `funPeaks_batch.m` in Octave or Matlab
 
 
 ### Structural descriptors computation 
 Structural descriptors are computed via RStudio, partly after the article from P. Meng et al (2022), DOI: 10.1080/17538947.2022.2059114:
-* In RStudio, run the script /scripts/FHI/FHI_catalog.R with the correct parameter value in the the config file `/config/config_FHI.yml`
+* In RStudio, run the script `scripts/FHI/FHI_catalog.R` with the correct parameter value in the the config file `.config/config_FHI.yml`
 	* When processing original data
 	```
-	 DIR_LAS: "C:/.../proj-hetres/data/02_intermediate/LiDAR_point_cloud/original/dft_outputs/"
-	 SIM_DIR: "C:/.../proj-hetres/data/02_intermediate/LiDAR_point_cloud/original/fhi_outputs/"
+	 DIR_LAS: "02_intermediate/LiDAR_point_cloud/original/dft_outputs/"
+	 SIM_DIR: "02_intermediate/LiDAR_point_cloud/original/fhi_outputs/"
 	```
 	* When processing subsampled data
 	```
-	 DIR_LAS: "C:/.../proj-hetres/data/02_intermediate/LiDAR_point_cloud/downsampled/dft_outputs/"
-	 SIM_DIR: "C:/.../proj-hetres/data/02_intermediate/LiDAR_point_cloud/downsampled/fhi_outputs/"
+	 DIR_LAS: "02_intermediate/LiDAR_point_cloud/downsampled/dft_outputs/"
+	 SIM_DIR: "02_intermediate/LiDAR_point_cloud/downsampled/fhi_outputs/"
 	```
 
 ### Image processing 
