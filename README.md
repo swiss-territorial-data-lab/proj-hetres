@@ -77,8 +77,8 @@ python scripts/image_processing/filter_images.py
 
 Those code lines performs the following tasks:
 
-1. Yearly NDVI differences is downloaded from waldmonitoring.ch. 
-2. LiDAR point cloud are subsampled to have a similar density as the swisstopo product swissSURFACE3D.
+1. The yearly NDVI differences are downloaded from waldmonitoring.ch. 
+2. The LiDAR points cloud are subsampled to have a similar density as the swisstopo product swissSURFACE3D.
 3. The true orthophoto tiles are downsampled to have a similar spatial resolution as the swisstopo product SWISSIMAGE RS.
 
 ### Tree segmentation from LiDAR point cloud
@@ -92,13 +92,13 @@ LAS point cloud segmentation in individual trees is performed using the Digital 
 * Check the input paths in the Matlab/Octave script `funPeaks_batch.m`
 	* When processing original data
 	```
-	DIR_IN = '01_initial\LiDAR_point_cloud\original\'
-	DIR_OUT = '02_intermediate\LiDAR_point_cloud\original\dft_outputs\'
+	DIR_IN = '01_initial\lidar_point_cloud\original\'
+	DIR_OUT = '02_intermediate\lidar_point_cloud\original\dft_outputs\'
 	```
 	* When processing subsampled data
 	```
-	DIR_IN = '02_intermediate\LiDAR_point_cloud\downsampled\'
-	DIR_OUT = '02_intermediate\LiDAR_point_cloud\downsampled\dft_outputs\' 
+	DIR_IN = '02_intermediate\lidar_point_cloud\downsampled\'
+	DIR_OUT = '02_intermediate\lidar_point_cloud\downsampled\dft_outputs\' 
 	```
 * Add the folder and subfolder of `scripts/DFT/scripts` to the Path (Edit -> Set Path)
 * Run the Matlab/Octave script `funPeaks_batch.m` in Octave or Matlab
@@ -106,20 +106,20 @@ LAS point cloud segmentation in individual trees is performed using the Digital 
 
 ### Structural descriptors computation 
 Structural descriptors are computed via RStudio, partly after the article from P. Meng et al (2022), DOI: 10.1080/17538947.2022.2059114:
-* In RStudio, run the script `scripts/FHI/FHI_catalog.R` with the correct parameter value in the the config file `.config/config_FHI.yml`
+* In RStudio, run the script `scripts/FHI/FHI_catalog.R` with the correct parameter value in the the config file `config/config_FHI.yml`
 	* When processing original data
 	```
-	 DIR_LAS: "02_intermediate/LiDAR_point_cloud/original/dft_outputs/"
-	 SIM_DIR: "02_intermediate/LiDAR_point_cloud/original/fhi_outputs/"
+	 DIR_LAS: "02_intermediate/lidar_point_cloud/original/dft_outputs/"
+	 SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
 	```
 	* When processing subsampled data
 	```
-	 DIR_LAS: "02_intermediate/LiDAR_point_cloud/downsampled/dft_outputs/"
-	 SIM_DIR: "02_intermediate/LiDAR_point_cloud/downsampled/fhi_outputs/"
+	 DIR_LAS: "02_intermediate/lidar_point_cloud/downsampled/dft_outputs/"
+	 SIM_DIR: "02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/"
 	```
 
 ### Image processing 
-Image processing is performed on 4-bands images to extract health information. Correct inputs and outputs directory and files have to be given in the `/config/config_ImPro.yaml` file.
+Image processing is performed on 4-bands images to extract health information. Correct inputs and outputs directory and files have to be given in the `config/config_ImPro.yaml` file.
 
 ```
 python scripts/image_processing/calculate_ndvi.py
@@ -140,7 +140,7 @@ python scripts/image_processing/stats_per_tree_seg.py
 	```
 2. Compute stats (min, max, mean, median, std) per band for the GT trees,
 	* Don’t use the height filter, since the polygons are adjusted on the crown. 
-	* Specify parameters in  the `/config/config_ImPro.yaml` config file: 
+	* Specify parameters in  the `config/config_ImPro.yaml` config file: 
 	```
 	use_height_filter: false
 	ortho_directory: 01_initial/true_orthophoto/original/tiles/
@@ -150,30 +150,30 @@ python scripts/image_processing/stats_per_tree_seg.py
 	```	
 3. Compute stats (min, max, mean, median, std) per band for the segmented trees,
 	* Use the height filter to mask understory pixels. 
-	* Specify parameters in  the `/config/config_ImPro.yaml` config file: 
+	* Specify parameters in  the `config/config_ImPro.yaml` config file: 
 	```
 	use_height_filter: true
 	ortho_directory: 02_intermediate/true_orthophoto/downsampled/tiles/
 	ndvi_directory: 02_intermediate/true_orthophoto/downsampled/ndvi/
 	output_directory: 02_intermediate/true_orthophoto/downsampled/
-	beech_file: 02_intermediate/LiDAR_point_cloud/original/fhi_outputs/mosaic_seg_params.shp
+	beech_file: 02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp
 	```	
 
 ### Random Forest
 To prepare the descriptors, train and optimize the model and make the predictions:
 
-* Edit `/config/config_merge.yml` for the preparation of descriptor suscessively for the GT trees and the segmented treesMerge:
+* Edit `config/config_merge.yml` for the preparation of descriptor successively for the GT trees and the segmented treesMerge:
 	* For GT trees:
 	```
 	TRAIN_DATA : TRUE
-	SIM_STATS_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/01_initial/true_orthophoto/original/tables/gt/"
+	SIM_STATS_DIR: "01_initial/true_orthophoto/original/tables/gt/"
 	```
 	* For segmented trees:
 	```
 	TRAIN_DATA : FALSE
-	SIM_STATS_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/01_initial/true_orthophoto/original/tables/seg/"
+	SIM_STATS_DIR: "01_initial/true_orthophoto/original/tables/seg/"
 	```
-	* Change "original" for "downsampled" everywhere in `/config/config_merge.yml`, to compute corresponding outputs for downgraded data. 
+	* Change "original" for "downsampled" everywhere in `config/config_merge.yml`, to compute corresponding outputs for downgraded data. 
 * Use the script `RF.R` to train, optimize and output GPKG with prediction for the segmented polygons. 
 
 The ground truth analysis was performed using … 
@@ -199,7 +199,7 @@ The ground truth consists of beech trees with location and health state.
 * Delineation of some tree crowns by hand, estimation of other tree crowns with a buffer in function of height around coordinates. 
 * Conversion of 5 health classes (healthy, a bit unhealthy, middle unhealthy, very unhealthy, dead) to 3 classes (healthy, unhealthy, dead)
 
-### Structure
+#### Structure
 
 The script expect to find the data in the project folder following the structure presented here below.
 
@@ -208,7 +208,7 @@ The script expect to find the data in the project folder following the structure
    ├── 01_initial                 # initial data (as delivered)
       ├── AOI                     # AOI shape file
       ├── ground_truth            # ground truth shape file
-      ├── LiDAR_point_cloud       # 
+      ├── lidar_point_cloud       # 
          └── original             # original classified LiDAR point cloud
       └── true_orthophoto         #
          └── original             #
