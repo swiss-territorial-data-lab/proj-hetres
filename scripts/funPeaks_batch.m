@@ -6,13 +6,10 @@
 #   DIR_OUT : directory for output files
 
 WORKING_DIR='C:\Users\gwena\Documents\STDL\2_En_cours\deperissement-hetres\02_Data';
-DIR_IN = '02_intermediate\lidar_point_cloud\downsampled\';
-DIR_OUT = '02_intermediate\lidar_point_cloud\downsampled\dft_outputs\';
+DIR_IN =strcat(WORKING_DIR,  '02_intermediate\lidar_point_cloud\downsampled\');
+DIR_OUT = strcat(WORKING_DIR, '02_intermediate\lidar_point_cloud\downsampled\dft_outputs\');
 
 OVERWRITE=0;
-
-chdir(WORKING_DIR)
-
 ################################################################################
 
 
@@ -22,7 +19,7 @@ number_tiles = size(fileList)(1);
 ### height second radius
 ## searchRadius1 = @(h) (3.09632 + 0.00895 * h^2)/2;  % deciduous forest
 ## searchRadius2 = @(h) (1.7425 * h^0.5566)/2 ;  % mixed forest (Chen et al., 2006)
-searchRadius3 = @(h) (1.2 + 0.16 * h)/2 ;  % mixed forest (Pitkänen et al., 2004)
+searchRadius3 = @(h) (1.2 + 0.16 * h)/2 ;  % mixed forest (Pitkanen et al., 2004)
 
 fprintf('Processing tiles...');
 for k=1:number_tiles
