@@ -23,34 +23,9 @@ library(terra)
 library(EnvStats)
 library(pracma)
 
-source("C:/Users/cmarmy/Documents/STDL/Beeches/delivery/scripts/functions.R")
+source("scripts/functions/functions.R")
 
-
-
-### Define simulation parameters ###
-Sys.setenv(R_CONFIG_ACTIVE = "production")
-config <- config::get(file="C:/Users/cmarmy/Documents/STDL/Beeches/delivery/config/config_FHI.yml")
-
-RES_CELL <- config$RES_CELL
-SIM_DIR <- config$SIM_DIR
-DIR_LAS <- config$DIR_LAS
-NEED_EXTENT <- config$NEED_EXTENT
-DIR_EXTENT <- config$DIR_EXTENT
-
-# NB: NEED_EXTENT comments l.154, paragraph "Load corresponding extent from SHP emprise" if 
-# the used LAS tiles are perfect squares (point coverage = square extent).
-# This is the case for the LAS files in las_swisstopo folder. 
-
-
-
-##########################################
-
-
-
-### Clear directory ###
-f <- list.files(SIM_DIR, include.dirs = F, full.names = T, recursive = T)
-file.remove(f)
-
+### Define functions ###
 
 norm_chunk <- function(chunk){
 
@@ -155,7 +130,7 @@ norm_chunk <- function(chunk){
   ### NaN handling (borders, no acquisitions) ###
   names(las_params)<-c("zq99","alpha","beta","cvLAD","VCI","I_mean", "I_sd", "CC")
   las_params_crop <- crop(las_params, las_ext, snap="near", extend=FALSE)
-  las_params_ext <-extend(las_params_crop, las_ext, fill=NA)
+  las_params_ext <- extend(las_params_crop, las_ext, fill=NA)
   mask_ext[is.na(values(las_params_ext["zq99"]))]=100
   mask_ext[is.na(values(las_params_ext["alpha"]))]=200
   mask_ext[is.na(values(las_params_ext["alpha"]))]=300
@@ -172,7 +147,7 @@ norm_chunk <- function(chunk){
   values(las_params_ext)[is.infinite(values(las_params_ext))]=0
 
   sdcc_crop <- crop(sdcc, las_ext, snap="near", extend=FALSE)
-  sdcc_ext <-extend(sdcc_crop, las_ext, fill=NA)
+  sdcc_ext <- extend(sdcc_crop, las_ext, fill=NA)
   mask_ext[is.na(values(sdcc_ext))]=700
   values(sdcc_ext)[is.na(values(sdcc_ext))]=0
 
@@ -204,19 +179,44 @@ norm_chunk <- function(chunk){
   return(seg_params)
 }
 
+### Define simulation parameters ###
+Sys.setenv(R_CONFIG_ACTIVE = "production")
+config <- config::get(file="config/config_FHI.yml")
+
+WORKING_DIR <- config$WORKING_DIR
+DIR_EXTENT <- config$DIR_EXTENT
+DIR_LAS <- config$DIR_LAS
+
+RES_CELL <- config$RES_CELL
+NEED_EXTENT <- config$NEED_EXTENT
+
+SIM_DIR <- config$SIM_DIR
+
+# NB: NEED_EXTENT comments l.154, paragraph "Load corresponding extent from SHP emprise" if 
+# the used LAS tiles are perfect squares (point coverage = square extent).
+# This is the case for the LAS files in las_swisstopo folder. 
+
+setwd(WORKING_DIR)
+
+##########################################
+
+### Clear directory ###
+f <- list.files(SIM_DIR, include.dirs = F, full.names = T, recursive = T)
+file.remove(f)
+
 ctg <- readLAScatalog(DIR_LAS)
 opt_output_files(ctg) <- paste0(SIM_DIR, "/{*}")
 options <- list(automerge = TRUE)
 ctg@output_options$drivers$Raster$param$overwrite <- TRUE
 ctg@output_options$drivers$Spatial$param$overwrite <- TRUE
-output <- catalog_apply(ctg, norm_chunk,.options=options)
+output <- catalog_apply(ctg, norm_chunk, .options=options)
 
 
 
 #### Merge the output rasters (params, mask, agl, ...) and shapes ####
-mergeRaster(SIM_DIR,"*_params.tif","mean",'mosaic_params.tif')
-mergeRaster(SIM_DIR,"*_mask.tif","mean",'mosaic_mask.tif')
-mergeRaster(SIM_DIR,"*_agl.tif","mean",'mosaic_agl.tif')
-mergeRaster(SIM_DIR,"_chm.tif","max",'mosaic_chm.tif')
+mergeRaster(SIM_DIR, "*_params.tif", "mean", 'mosaic_params.tif')
+mergeRaster(SIM_DIR, "*_mask.tif", "mean", 'mosaic_mask.tif')
+mergeRaster(SIM_DIR, "*_agl.tif", "mean", 'mosaic_agl.tif')
+mergeRaster(SIM_DIR, "_chm.tif", "max", 'mosaic_chm.tif')
 
-mergeVectors(SIM_DIR,DIR_LAS,"*seg.shp","*peaks.shp","mosaic_seg_params.shp","mosaic_peaks.shp")
+mergeVectors(SIM_DIR, DIR_LAS, "*seg.shp", "*peaks.shp", "mosaic_seg_params.shp", "mosaic_peaks.shp")
