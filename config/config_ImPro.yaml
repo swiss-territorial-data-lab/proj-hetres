@@ -1,28 +1,28 @@
 filter_images.py:
   original_ortho: true
   filter_type: "downsampling"    # valid values: "gaussian", "downsampling", "sieve" and "thresholds"
-  working_directory: C:/Users/gwena/Documents/STDL/2_En_cours/deperissement-hetres/02_Data
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data
   inputs: 
-    ortho_directory: 01_Initial/true_orthophoto/original/tiles/
-    ndvi_directory: 02_Intermediate/true_orthophoto/original/ndvi/
-  destination_directory: 02_Intermediate/true_orthophoto/downsampled/tiles
-  tile_delimitation: 01_Initial/AOI/AOI_tiles/AOI_GT.shp
+    ortho_directory: 01_initial/true_orthophoto/original/tiles/
+    ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi/
+  destination_directory: 02_intermediate/true_orthophoto/original/tiles
+  tile_delimitation: 01_initial/AOI/AOI_tiles/AOI_GT.shp
 
 calculate_ndvi.py:
   working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data
   inputs:
-    ortho_directory: 01_Initial/true_orthophoto/original/tiles
-    ndvi_directory: 02_Intermediate/true_orthophoto/original/ndvi
-    tile_delimitation: 01_Initial/AOI/AOI_tiles/AOI_GT.shp
+    ortho_directory: 02_intermediate/true_orthophoto/original/tiles
+    tile_delimitation: 01_initial/AOI/AOI_tiles/AOI_GT.shp
+  ndvi_output_directory: 02_intermediate/true_orthophoto/original/ndvi
 
 stats_per_tree.py:
   use_height_filter: true
   working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data
   inputs:
-    ortho_directory: 01_Initial/true_orthophoto/original/tiles/
-    ndvi_directory: 02_Intermediate/true_orthophoto/original/ndvi/
-    output_directory: 02_Intermediate/true_orthophoto/original/
-    chm: "C:/Users/cmarmy/Documents/STDL/Beeches/review/proj-hetres/03_Scripts/processed/CHM/CHM_binary_beurnevesin.tif"
-    tile_delimitation: 01_Initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056_sub.shp # data/02_Intermediate/AOI/AOI_GT.shp
-    beech_file: 02_Intermediate/ground_truth/STDL_releves_poly_ok.gpkg # data/02_Intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp #
-    beech_layer: all_trees #ok_trees_20_40_m
+    ortho_directory: 02_intermediate/true_orthophoto/downsampled/tiles
+    ndvi_directory: 02_intermediate/true_orthophoto/downsampled/ndvi
+    chm: 02_intermediate/CHM/CHM_binary_beurnevesin.tif
+    tile_delimitation: 01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056.shp # data/02_Intermediate/AOI/AOI_GT.shp
+    beech_file: 02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/mosaic_seg_params.shp # data/02_Intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp #
+    beech_layer: all_trees # ok_trees_20_40_m
+  output_directory: 02_intermediate/true_orthophoto/original/

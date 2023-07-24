@@ -11,7 +11,7 @@ from shapely.ops import unary_union
 
 sys.path.insert(1, 'scripts')
 import functions.fct_misc as fct_misc
-from functions.fct_stats import pca_procedure, lda_procedure
+from functions.fct_stats import pca_procedure
 
 logger=fct_misc.format_logger(logger)
 # warnings.filterwarnings("ignore",
@@ -31,7 +31,7 @@ INPUTS=cfg['inputs']
 
 ORTHO_DIR=INPUTS['ortho_directory']
 NDVI_DIR=INPUTS['ndvi_directory']
-OUTPUT_DIR=INPUTS['output_directory']
+OUTPUT_DIR=cfg['output_directory']
 
 CHM=INPUTS['chm']
 
@@ -71,7 +71,11 @@ if USE_FILTER:
 else:
     correct_high_beeches=beeches.copy()
 
-tiles=fct_misc.get_ortho_tiles(tiles, ORTHO_DIR, NDVI_DIR)
+if 'downsampled' not in ORTHO_DIR:
+    tiles=fct_misc.get_ortho_tiles(tiles, ORTHO_DIR, NDVI_DIR)
+else:
+    tiles['path_RGB']=[os.path.join(ORTHO_DIR, tile_name + '.tif') for tile_name in tiles.NAME.to_numpy()]
+    tiles['path_NDVI']=[os.path.join(NDVI_DIR, tile_name + '_NDVI.tif') for tile_name in tiles.NAME.to_numpy()]
 
 clipped_beeches=fct_misc.clip_labels(correct_high_beeches, tiles)
 
