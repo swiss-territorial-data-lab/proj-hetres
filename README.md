@@ -15,7 +15,7 @@ No specific requirements.
     $ conda activate <the name of the virtual env>
     $ pip install -r setup/requirements.txt
     ```
-* R: For installation of R, please follow the steps in https://cran.r-project.org/. Afterwards, install the necessary packages given in the script `/setup/environment.R`. To do that, run the mentioned script in RStudio.
+* R: For installation of R, please follow the steps in https://cran.r-project.org/. Afterwards, install the necessary packages given in the script `setup/environment.R`. To do that, run the mentioned script in RStudio.
 
 * Octave/Matlab: For installation of Octave/Matlab, please follow the steps in https://octave.org/download.
 
