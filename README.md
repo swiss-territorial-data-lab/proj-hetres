@@ -41,13 +41,13 @@ No specific requirements.
 
 Scripts are run in combination with their hard-coded config files in the following order: 
 
-1. `downloadNDVIdiff.py`
-2. `subsampleLAS.py`
-3. `image_processing/scripts/filter_images.py`
+1. `data_preparation/downloadNDVIdiff.py`
+2. `data_preparation/subsampleLAS.py`
+3. `image_processing/filter_images.py`
 4. `funPeaks_batch.m`
 5. `FHI_catalog.R`
-6. `images_processing/scripts/calculate_ndvi.py`
-7. `images_processing/scripts/stats_per_tree.py`
+6. `images_processing/calculate_ndvi.py`
+7. `images_processing/stats_per_tree.py`
 8. `mergeData_inpoly.R`
 9. `RF.R`
 
@@ -55,9 +55,7 @@ The following terminology will be used throughout this document:
 
 * **other data**: data that is not ground-truth-grade 
 
-* **descriptors**: other data processed so that they may describe beech tree health state. 
-
-* **trn**, **val**, **tst**, **oth**: abbreviations of "training", "validation", "test" and "other", respectively
+* **descriptors**: data processed so that it may describe health state of beech trees. 
 
 The following abbreviations are used:
 
@@ -66,6 +64,8 @@ The following abbreviations are used:
 * **GT**: ground truth
 
 * **RF**: random forest
+
+* **trn**, **val**, **tst**, **oth**: abbreviations of "training", "validation", "test" and "other", respectively
 
 ### Data preparation
 
