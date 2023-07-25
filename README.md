@@ -143,9 +143,6 @@ python scripts/image_processing/stats_per_tree_seg.py
 	* Specify parameters in  the `config/config_ImPro.yaml` config file: 
 	```
 	use_height_filter: false
-	ortho_directory: 01_initial/true_orthophoto/original/tiles/
-	ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi/
-	output_directory: 02_intermediate/true_orthophoto/original/
 	beech_file: 02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg
 	```	
 3. Compute stats (min, max, mean, median, std) per band for the segmented trees,
@@ -153,9 +150,6 @@ python scripts/image_processing/stats_per_tree_seg.py
 	* Specify parameters in  the `config/config_ImPro.yaml` config file: 
 	```
 	use_height_filter: true
-	ortho_directory: 02_intermediate/true_orthophoto/downsampled/tiles/
-	ndvi_directory: 02_intermediate/true_orthophoto/downsampled/ndvi/
-	output_directory: 02_intermediate/true_orthophoto/downsampled/
 	beech_file: 02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/mosaic_seg_params.shp
 	```	
 

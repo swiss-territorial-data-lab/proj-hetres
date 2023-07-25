@@ -46,9 +46,10 @@ if (TRAIN) {
   RESP <- st_read(PATH_GT)
   RESP <- RESP[,c("CLASS_SAN3","NO_ARBRE")]
   names(RESP)<-c("CLASS_SAN","ID","geometry")
+  CSV_NAME <- "all_desc_GT_nohf_poly.csv"
+}else {
+  CSV_NAME <- "all_desc_seg_hf_poly.csv" 
 }
-
-CSV_NAME <- "all_desc_seg_hf_poly.csv" 
 
 
 ## Structural params on segmentation shapes

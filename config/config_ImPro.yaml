@@ -25,4 +25,4 @@ stats_per_tree.py:
     tile_delimitation: 01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056.shp # data/02_Intermediate/AOI/AOI_GT.shp
     beech_file: 02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/mosaic_seg_params.shp # data/02_Intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp #
     beech_layer: all_trees # ok_trees_20_40_m
-  output_directory: 02_intermediate/true_orthophoto/original/
+  output_directory: 02_intermediate/true_orthophoto/downsampled/
