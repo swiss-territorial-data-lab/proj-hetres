@@ -79,7 +79,9 @@ Those code lines performs the following tasks:
 
 1. The yearly NDVI differences are downloaded from waldmonitoring.ch. 
 2. The LiDAR points cloud are subsampled to have a similar density as the swisstopo product swissSURFACE3D.
-3. The true orthophoto tiles are downsampled to have a similar spatial resolution as the swisstopo product SWISSIMAGE RS.
+3. The true orthophoto tiles are subsampled to have a similar spatial resolution as the swisstopo product SWISSIMAGE RS.
+
+The second and third steps are facultative. The whole project can be run on the original or subsampled data.
 
 ### Tree segmentation from LiDAR point cloud
 LAS point cloud segmentation in individual trees is performed using the Digital Forestry Toolbox on Matlab/Octave:
