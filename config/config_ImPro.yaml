@@ -3,8 +3,8 @@ filter_images.py:
   filter_type: "downsampling"    # valid values: "gaussian", "downsampling", "sieve" and "thresholds"
   working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data
   inputs: 
-    ortho_directory: 01_initial/true_orthophoto/original/tiles/
-    ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi/
+    ortho_directory: 01_initial/true_orthophoto/original/tiles
+    ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi
   destination_directory: 02_intermediate/true_orthophoto/original/tiles
   tile_delimitation: 01_initial/AOI/AOI_tiles/AOI_GT.shp
 
@@ -19,10 +19,10 @@ stats_per_tree.py:
   use_height_filter: true
   working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data
   inputs:
-    ortho_directory: 02_intermediate/true_orthophoto/downsampled/tiles
-    ndvi_directory: 02_intermediate/true_orthophoto/downsampled/ndvi
+    ortho_directory: 01_initial/true_orthophoto/original/tiles
+    ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi
     chm: 02_intermediate/CHM/CHM_binary_beurnevesin.tif
     tile_delimitation: 01_initial/AOI/JUHE_Emprise_Blocs_LiDAR_2056.shp # data/02_Intermediate/AOI/AOI_GT.shp
-    beech_file: 02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/mosaic_seg_params.shp # data/02_Intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp #
+    beech_file: 02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp # data/02_Intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp #
     beech_layer: all_trees # ok_trees_20_40_m
-  output_directory: 02_intermediate/true_orthophoto/downsampled/
+  output_directory: 02_intermediate/true_orthophoto/original/

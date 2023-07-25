@@ -7,9 +7,9 @@ default:
  SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
 
 production:
- WORKING_DIR: "C:/Users/gwena/Documents/STDL/2_En_cours/deperissement-hetres/02_Data"
- DIR_LAS: "02_intermediate/lidar_point_cloud/downsampled/dft_outputs/"
+ WORKING_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data/"
+ DIR_LAS: "02_intermediate/lidar_point_cloud/original/dft_outputs/"
  DIR_EXTENT: "02_intermediate/AOI/tiles/"
  NEED_EXTENT: TRUE
  RES_CELL: 2.5
- SIM_DIR: "02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/"
+ SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
