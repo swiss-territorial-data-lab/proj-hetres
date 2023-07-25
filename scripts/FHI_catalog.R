@@ -179,6 +179,8 @@ norm_chunk <- function(chunk){
   return(seg_params)
 }
 
+##########################################
+
 ### Define simulation parameters ###
 Sys.setenv(R_CONFIG_ACTIVE = "production")
 config <- config::get(file="config/config_FHI.yml")
@@ -198,7 +200,7 @@ SIM_DIR <- config$SIM_DIR
 
 setwd(WORKING_DIR)
 
-##########################################
+dir.create(SIM_DIR, recursive=TRUE)
 
 ### Clear directory ###
 f <- list.files(SIM_DIR, include.dirs = F, full.names = T, recursive = T)

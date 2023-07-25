@@ -156,7 +156,7 @@ python scripts/image_processing/stats_per_tree_seg.py
 	ortho_directory: 02_intermediate/true_orthophoto/downsampled/tiles/
 	ndvi_directory: 02_intermediate/true_orthophoto/downsampled/ndvi/
 	output_directory: 02_intermediate/true_orthophoto/downsampled/
-	beech_file: 02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp
+	beech_file: 02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/mosaic_seg_params.shp
 	```	
 
 ### Random Forest
@@ -219,7 +219,7 @@ The script expect to find the data in the project folder following the structure
       ├── ground_truth            # cleaned ground truth shape files
       ├── lidar_point_cloud       #
          ├── downsampled          # downsampled LiDAR point cloud
-            ├── dft_outputs       # DFT outputs for dowsampled LiDAR point cloud
+            ├── dft_outputs       # DFT outputs for downsampled LiDAR point cloud
             └── fhi_outputs       # Forest Health Index outputs for downsampled LiDAR point cloud
          └── original             # 
             ├── dft_outputs       # DFT outputs for original LiDAR point cloud
@@ -232,8 +232,8 @@ The script expect to find the data in the project folder following the structure
             ├── images            # boxplots and PCA for each bands
                ├── gt             # ... for ground truth
                └── seg            # ... for segmented trees
-            ├── ndvi              # NDVI tiles computed from NRGB tiles
-            ├── tables            # statstics and pca on NRGB-bands
+            ├── ndvi              # NDVI tiles computed from NirRGB tiles
+            ├── tables            # statistics and pca on NirRGB-bands
                ├── gt             # ... for ground truth
                └── seg            # ... for segmented trees
               └── tiles           # downsampled tiles of the original true orthophoto
@@ -241,8 +241,8 @@ The script expect to find the data in the project folder following the structure
             ├── images            # boxplots and PCA for each bands
                ├── gt             # ... for ground truth
                └── seg            # ... for segmented trees
-            ├── ndvi              # NDVI tiles computed from NRGB tiles
-            └── tables            # statstics and pca on NRGB-bands
+            ├── ndvi              # NDVI tiles computed from NirRGB tiles
+            └── tables            # statistics and pca on NirRGB-bands
                ├── gt             # ... for ground truth
                └── seg            # ... for segmented trees
    ├── 03_final                   # final data for product delivery

@@ -5,7 +5,6 @@ default:
  NEED_EXTENT: TRUE
  RES_CELL: 2.5
  SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
- SIM_FOLDER: "fhi_outputs/"
 
 production:
  WORKING_DIR: "C:/Users/gwena/Documents/STDL/2_En_cours/deperissement-hetres/02_Data"
@@ -14,4 +13,3 @@ production:
  NEED_EXTENT: TRUE
  RES_CELL: 2.5
  SIM_DIR: "02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/"
- SIM_FOLDER: "fhi_outputs/"

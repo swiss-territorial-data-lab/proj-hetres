@@ -1,9 +1,10 @@
 #> This script merges several types of descriptors (structural parameters, NDVI
 #> and RGBNIR stats) and join results on the ground truth which has 
 #> the health class (10-health, 20-declining, 30-dead) in attribute.
+#> The ground truth is in the form of points.
 #> 
 #> INPUTS:
-#> - GT shape. 
+#> - GT shape as point
 #> - mosaic_seg_params.shp : polygons of the segmentation with structural parameters.
 #> - mosaic_params.tif : raster with the structural parameters.
 #> - mosaic_agl.tif : raster of AGL (understory) 
@@ -23,15 +24,14 @@ library(terra)
 
 ### Define simulation parameters ###
 Sys.setenv(R_CONFIG_ACTIVE = "production")
-config <- config::get(file="C:/Users/cmarmy/Documents/STDL/Beeches/delivery/scripts/config.yml")
+config <- config::get(file="scripts/config_merge.yml")
 
-SIM_DIR <- config$SIM_DIR
-SIM_FOLDER <- config$SIM_FOLDER
 TRAIN <- config$TRAIN_DATA
 PATH_GT <- config$PATH_GT
+SIM_DIR <- config$SIM_DIR
 SIM_STATS <- config$SIM_STATS_DIR
 NDVI_DIR <- config$NDVI_DIR
-OUT_DIR<- config$RF_DIR
+OUT_DIR <- config$RF_DIR
 
 
 
@@ -52,7 +52,7 @@ names(RESP)<-c("CLASS_SAN","ID","geometry")
 seg_params <- st_read(paste0(SIM_DIR,"mosaic_seg_params.shp"))
 st_crs(RESP) <- st_crs(seg_params)
 
-RESP_params<-st_join(RESP, seg_params[,c(1:8)], join=st_intersects,left=FALSE, right=FALSE)
+RESP_params<-st_join(RESP, seg_params[,c(1:8)], join=st_intersects, left=FALSE, right=FALSE)
 RESP_params<-RESP_params[,c(1:2,10,3:9,11)]
 RESP_params <- RESP_params[!duplicated(RESP_params$ID),]
 
