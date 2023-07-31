@@ -1,6 +1,6 @@
 # Automatic estimation of the health state for trees based on airborne imagery and LiDAR point cloud
 
-This project provides a suite of Python, R and Octave/Matlab scripts allowing the end-user to use Machine Learning to assess beech tree health grade based on orthophoto and LiDAR point cloud. 
+This project provides a suite of Python, R and Octave/Matlab scripts allowing the end-user to use machine learning to assess the health grade of beech trees based on orthophotos and a LiDAR point cloud. 
 
 ## Hardware requirements
 
@@ -8,16 +8,16 @@ No specific requirements.
 
 ## Software Requirements
 
-* Python 3.8: Dependencies may be installed with either `pip` or `conda`, by making use of the provided `requirements.txt` file. The following method was tested successfully on a Windows system: 
+* Python 3.8: The dependencies may be installed with either `pip` or `conda`, by making use of the provided `requirements.txt` file. The following method was tested successfully on a Windows system: 
 
     ```bash
     $ conda create -n <the name of the virtual env> -c conda-forge python=3.10 gdal
     $ conda activate <the name of the virtual env>
     $ pip install -r setup/requirements.txt
     ```
-* R: For installation of R, please follow the steps in https://cran.r-project.org/. Afterwards, install the necessary packages given in the script `setup/environment.R`. To do that, run the mentioned script in RStudio.
+* R: For the installation of R, please follow the steps in https://cran.r-project.org/. Afterwards, install the necessary packages given in the script `setup/environment.R`. To do that, run the mentioned script in RStudio.
 
-* Octave/Matlab: For installation of Octave/Matlab, please follow the steps in https://octave.org/download.
+* Octave/Matlab: For the installation of Octave/Matlab, please follow the steps in https://octave.org/download.
 
 ## Folder structure
 
@@ -39,7 +39,7 @@ No specific requirements.
 
 ## Scripts and Procedure
 
-Scripts are run in combination with their hard-coded config files in the following order: 
+Scripts are run in combination with their hard-coded configuration files in the following order: 
 
 1. `data_preparation/downloadNDVIdiff.py`
 2. `data_preparation/subsampleLAS.py`
@@ -75,16 +75,16 @@ python scripts/data_preparation/subsampleLAS.py
 python scripts/image_processing/filter_images.py
 ```
 
-Those code lines performs the following tasks:
+Those code lines perform the following tasks:
 
 1. The yearly NDVI differences are downloaded from waldmonitoring.ch. 
-2. The LiDAR points cloud are subsampled to have a similar density as the swisstopo product swissSURFACE3D.
+2. The LiDAR point clouds are subsampled to have a similar density as the swisstopo product swissSURFACE3D.
 3. The true orthophoto tiles are subsampled to have a similar spatial resolution as the swisstopo product SWISSIMAGE RS.
 
 The second and third steps are facultative. The whole project can be run on the original or subsampled data.
 
 ### Tree segmentation from LiDAR point cloud
-LAS point cloud segmentation in individual trees is performed using the Digital Forestry Toolbox on Matlab/Octave:
+The segmentation of trees in the LAS point cloud is performed using the Digital Forestry Toolbox on Matlab/Octave:
 * Go to Matthew Parkan's GitHub: https://mparkan.github.io/Digital-Forestry-Toolbox/
 * Download the Digital Forestry Toolbox
 * Unzip the files in the script folder `/scripts/`
@@ -102,13 +102,13 @@ LAS point cloud segmentation in individual trees is performed using the Digital 
 	DIR_IN = '02_intermediate\lidar_point_cloud\downsampled\'
 	DIR_OUT = '02_intermediate\lidar_point_cloud\downsampled\dft_outputs\' 
 	```
-* Add the folder and subfolder of `scripts/DFT/scripts` to the Path (Edit -> Set Path)
+* Add the folder and subfolders of `scripts/DFT/scripts` to the Path (Edit -> Set Path)
 * Run the Matlab/Octave script `funPeaks_batch.m` in Octave or Matlab
 
 
 ### Structural descriptors computation 
 Structural descriptors are computed via RStudio, partly after the article from P. Meng et al (2022), DOI: 10.1080/17538947.2022.2059114:
-* In RStudio, run the script `scripts/FHI/FHI_catalog.R` with the correct parameter value in the the config file `config/config_FHI.yml`
+* In RStudio, run the script `scripts/FHI/FHI_catalog.R` with the correct parameter values in the the config file `config/config_FHI.yml`
 	* When processing original data
 	```
 	 DIR_LAS: "02_intermediate/lidar_point_cloud/original/dft_outputs/"
@@ -121,7 +121,7 @@ Structural descriptors are computed via RStudio, partly after the article from P
 	```
 
 ### Image processing 
-Image processing is performed on 4-bands images to extract health information. Correct inputs and outputs directory and files have to be given in the `config/config_ImPro.yaml` file.
+Image processing is performed on 4-bands images to extract health information. The correct input and output directories and files have to be given in the `config/config_ImPro.yaml` file.
 
 ```
 python scripts/image_processing/calculate_ndvi.py
@@ -129,7 +129,7 @@ python scripts/image_processing/stats_per_tree_gt.py
 python scripts/image_processing/stats_per_tree_seg.py
 ```
 
-1. Compute the NDVI images using R and NIR band,
+1. Compute the NDVI images using the red and NIR bands,
 	* When processing original data
 	```
 	ortho_directory: 01_initial/true_orthophoto/original/tiles
@@ -140,14 +140,14 @@ python scripts/image_processing/stats_per_tree_seg.py
 	ortho_directory: 02_intermediate/true_orthophoto/downsampled/tiles
 	ndvi_directory: 02_intermediate/true_orthophoto/downsampled/ndvi
 	```
-2. Compute stats (min, max, mean, median, std) per band for the GT trees,
+2. Compute the statistics (min, max, mean, median, std) per band for the GT trees,
 	* Don’t use the height filter, since the polygons are adjusted on the crown. 
 	* Specify parameters in  the `config/config_ImPro.yaml` config file: 
 	```
 	use_height_filter: false
 	beech_file: 02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg
 	```	
-3. Compute stats (min, max, mean, median, std) per band for the segmented trees,
+3. Compute the statistics (min, max, mean, median, std) per band for the segmented trees,
 	* Use the height filter to mask understory pixels. 
 	* Specify parameters in  the `config/config_ImPro.yaml` config file: 
 	```
@@ -158,7 +158,7 @@ python scripts/image_processing/stats_per_tree_seg.py
 ### Random Forest
 To prepare the descriptors, train and optimize the model and make the predictions:
 
-* Edit `config/config_merge.yml` for the preparation of descriptor successively for the GT trees and the segmented treesMerge:
+* Edit `config/config_merge.yml` for the preparation of the descriptors successively for the GT trees and the segmented trees:
 	* For GT trees:
 	```
 	TRAIN_DATA : TRUE
@@ -170,7 +170,7 @@ To prepare the descriptors, train and optimize the model and make the prediction
 	SIM_STATS_DIR: "01_initial/true_orthophoto/original/tables/seg/"
 	```
 	* Change "original" for "downsampled" everywhere in `config/config_merge.yml`, to compute corresponding outputs for downgraded data. 
-* Use the script `RF.R` to train, optimize and output GPKG with prediction for the segmented polygons. 
+* Use the script `RF.R` to train, optimize and output GPKG with predictions for the segmented polygons. 
 
 The ground truth analysis was performed using … 
 
@@ -188,16 +188,16 @@ The ground truth consists of beech trees with location and health state.
 * Collection of ground truth by the foresters (September 2022)
 * Addition of extra trees after control of the RF predictions on field (July 2023)
 * Delivery of a point vector file (coordinates + attributes) from the foresters
-* Correction of coordinates with the help of the LiDAR point cloud (visualized with potree) and of the pictures taken on field.
-* Removal of other species than beech trees
-* Removal of candles (very late stage of dead trees, only trunk left)
+* Correction of coordinates with the help of the LiDAR point cloud (visualized with potree) and the pictures taken on field.
+* Removal of species other than beech trees
+* Removal of candles (very late stage of dead trees, where only the trunk is left)
 * Removal of a few trees that are un-sharp on the true orthophoto
-* Delineation of some tree crowns by hand, estimation of other tree crowns with a buffer in function of height around coordinates. 
+* Delineation of some tree crowns by hand, estimation of other tree crowns with a buffer in function of the canopy diameter around coordinates. 
 * Conversion of 5 health classes (healthy, a bit unhealthy, middle unhealthy, very unhealthy, dead) to 3 classes (healthy, unhealthy, dead)
 
 #### Structure
 
-The script expect to find the data in the project folder following the structure presented here below.
+The scripts expect the data in the project folder following the structure presented below.
 
 ```
 ├── data                          # dataset folder
