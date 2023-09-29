@@ -1,9 +1,10 @@
 #> This script merges several types of descriptors (structural parameters, NDVI
 #> and RGBNIR stats) and join results on the ground truth which has 
 #> the health class (10-health, 20-declining, 30-dead) in attribute.
+#> The ground truth is in the form of polygons.
 #> 
 #> INPUTS:
-#> - GT shape
+#> - GT shape as polygons
 #> - mosaic_seg_params.shp : polygons of the segmentation with structural parameters.
 #> - mosaic_params.tif : raster with the structural parameters.
 #> - mosaic_agl.tif : raster of AGL (understory) 
@@ -24,16 +25,20 @@ library(raster)
 
 ### Define simulation parameters ###
 Sys.setenv(R_CONFIG_ACTIVE = "production")
-config <- config::get(file="C:/Users/cmarmy/Documents/STDL/Beeches/delivery/scripts/config.yml")
+config <- config::get(file="config/config_merge.yml")
 
-SIM_DIR <- config$SIM_DIR
-SIM_FOLDER <- config$SIM_FOLDER
+WORKING_DIR <- config$WORKING_DIR
+
 TRAIN <- config$TRAIN_DATA
 PATH_GT <- config$PATH_GT
+SIM_DIR <- config$SIM_DIR
 SIM_STATS <- config$SIM_STATS_DIR
 NDVI_DIR <- config$NDVI_DIR
 OUT_DIR <- config$RF_DIR
 
+setwd(WORKING_DIR)
+
+dir.create(OUT_DIR, recursive=TRUE)
 
 
 ### Link response variable & descriptors ###

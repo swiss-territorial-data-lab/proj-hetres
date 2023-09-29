@@ -10,6 +10,9 @@ from loguru import logger
 from tqdm import tqdm
 from glob import glob
 
+sys.path.insert(1, 'scripts')
+import functions.fct_misc as fct_misc
+
 
 def calculate_ndvi(tile, band_nbr_red=0, band_nbr_nir=3, path=None):
     '''
@@ -42,9 +45,8 @@ def calculate_ndvi(tile, band_nbr_red=0, band_nbr_nir=3, path=None):
 
 if __name__ == "__main__":
 
-    logger.remove()
-    logger.add(sys.stderr, format="{time:YYYY-MM-DD HH:mm:ss} - {level} - {message}", level="INFO")
-
+    logger=fct_misc.format_logger(logger)
+    
     tic = time.time()
     logger.info('Starting...')
 
@@ -58,12 +60,13 @@ if __name__ == "__main__":
 
     INPUTS=cfg['inputs']
     ORTHO=INPUTS['ortho_directory']
-    NDVI=INPUTS['ndvi_directory']
+    NDVI=cfg['ndvi_output_directory']
 
     TILE_DELIMITATION=INPUTS['tile_delimitation']
 
     os.chdir(WORKING_DIR)
-    written_files=[]
+
+    _=fct_misc.ensure_dir_exists(NDVI)
 
     logger.info('Reading files...')
     
@@ -77,8 +80,5 @@ if __name__ == "__main__":
         tile = tile.replace("\\","/") #handle windows path
         ndvi_tile_path=os.path.join(NDVI, tile.split('/')[-1].replace('.tif', '_NDVI.tif'))
         _ = calculate_ndvi(tile, path=ndvi_tile_path)
-        written_files.append(ndvi_tile_path)
 
-    logger.info('Some files were written:')
-    for file in written_files:
-        print(file)
+    logger.success(f'The files were written in the folder {NDVI}.')

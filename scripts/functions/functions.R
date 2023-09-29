@@ -5,6 +5,9 @@
 #> - crownMetricsParams: compute customized metrics per segmentation polygons. 
 #> - mergeRaster: merge the raster files produced in FHI_catalog.R into a mosaic.
 #> - mergeVector: merge the shape files produced in FHI_catalog.R into a mosaic.
+#> - mergeVectors: merge the segmented trees and the peaks of all the files produced 
+#>              by FHI_catalog.R into two files for segments and peaks. 
+#>              Only keep peeks corresponding to a segment.
 #> - mySummary: customized summary function: 1. minimizing unhealthy->healthy, 
 #>              dead->healthy and dead->unhealthy, 2. computing linear weighted 
 #>              kappa. 
@@ -252,7 +255,6 @@ mergeVector<-function(wkdir, extension, output){
   files <- list.files(path=wkdir, pattern=extension, full.names=TRUE, recursive=FALSE)
   
   r0 <- data.frame()
-  q0 <-data.frame()
   for (i in 1:length(files)){
     
     r <- as.data.frame(st_read(files[i]))
@@ -267,9 +269,9 @@ mergeVector<-function(wkdir, extension, output){
 }
 
 
-mergeVectors<-function(wkdir, wkdir2, extension, extension2,output, output2){
-  files <- list.files(path=wkdir, pattern=extension, full.names=TRUE, recursive=FALSE)
-  files2 <- list.files(path=wkdir2, pattern=extension2, full.names=TRUE, recursive=FALSE) 
+mergeVectors<-function(datadir, datadir2, extension, extension2, output, output2){
+  files <- list.files(path=datadir, pattern=extension, full.names=TRUE, recursive=FALSE)
+  files2 <- list.files(path=datadir2, pattern=extension2, full.names=TRUE, recursive=FALSE) 
 
   r0 <- data.frame()
   q0 <-data.frame()
@@ -297,8 +299,8 @@ mergeVectors<-function(wkdir, wkdir2, extension, extension2,output, output2){
 
 mySummary <- function(data, lev=NULL, model=NULL){
   cf <- confusionMatrix(data$obs, data$pred)
-  fdr <- (cf[["table"]][1,2]+cf[["table"]][1,3]+cf[["table"]][2,3])/sum(cf[["table"]][,2:3]) #false detection rate
-  wgthd_kappa <- as.numeric(Kappa(cf[["table"]],r = 1,alternative = c("two.sided"),conf.level = 0.95,partial = FALSE)[1])
+  fdr <- (cf[["table"]][1,2] + cf[["table"]][1,3] + cf[["table"]][2,3]) / sum(cf[["table"]][,2:3]) # false detection rate
+  wgthd_kappa <- as.numeric(Kappa(cf[["table"]], r = 1, alternative = c("two.sided"), conf.level = 0.95, partial = FALSE)[1])
   customizedAccuracy <-  c(fdr, wgthd_kappa[1])
   names(customizedAccuracy) <- c("fdr","wgthd_kappa")
   return(customizedAccuracy)

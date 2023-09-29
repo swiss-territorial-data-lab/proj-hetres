@@ -22,21 +22,23 @@ library(terra)
 
 set.seed(222)
 
-source("C:/Users/cmarmy/Documents/STDL/Beeches/delivery/scripts/FHI/functions.R")
+source("scripts/functions/functions.R")
 
 
 ### Define simulation parameters ###
 Sys.setenv(R_CONFIG_ACTIVE = "production")
-config <- config::get(file="C:/Users/cmarmy/Documents/STDL/Beeches/delivery/scripts/config.yml")
+config <- config::get(file="config/config_RF.yml")
 
-SIM_DIR <-config$SIM_DIR
+WORKING_DIR <- config$WORKING_DIR
 RF_DIR <- config$RF_DIR
-SIM_FOLDER <- config$SIM_FOLDER
+SIM_DIR <- config$SIM_DIR
+
 DESC <- config$DESCRIPTORS
 CUTOFF <- config$CUTOFF
+
 RF_PRED <- config$RF_PRED
 
-
+setwd(WORKING_DIR)
 
 ### Dataset for Random Forest ###
 data_all <- read.csv(paste0(RF_DIR,"all_desc_GT_nohf_poly.csv"))
@@ -112,7 +114,7 @@ test <- subset(test_out, select = -c(1))
 # # Number of descriptor to test at branch split
 # tuneRF(data[,-c(1,2)], data$CLASS_SAN, ntreeTry=400, stepFactor=2, improve=0.01,trace=TRUE, plot=TRUE, doBest=FALSE)
 
-# randomForest::varImpPlot(model, sort=FALSE, main=paste0("Variable Importance Plot at ",SIM_FOLDER," m"))
+# randomForest::varImpPlot(model, sort=FALSE, main=paste0("Variable Importance Plot at ",SIM_DIR," m"))
 
 ## Visualize proximity in dataset
 # corrplot(rf$proximity[train$CLASS_SAN==10, train$CLASS_SAN==20], method='color', is.corr=FALSE) # show proximity
@@ -127,7 +129,7 @@ tuning <- sapply(ntree, function(ntr){
   tuneGrid <- expand.grid(.mtry = c((round(sqrt(length(train)-1))-round(sqrt(length(train)-1)/2)): (round(sqrt(length(train)-1))+round(sqrt(length(train)-1)/2))))
   model <- train(CLASS_SAN~., data=train, trControl=train_control, 
                  tuneGrid=tuneGrid, metric="fdr", method="rf", ntree=ntr, 
-                 cutoff=CUTOFF,importance=TRUE, maximize=FALSE)
+                 cutoff=CUTOFF, importance=TRUE, maximize=FALSE)
   var_imp <- caret::varImp(model)
   accuracy <- sum(predict(model,test) == test$CLASS_SAN)/length(test$CLASS_SAN)
   cf <- confusionMatrix(predict(model,test), test$CLASS_SAN)

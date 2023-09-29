@@ -1,15 +1,18 @@
-function funPeaks(pc, minTreeHeight_min, minTreeHeight_max, minTreeHeight_step, minHeightDifference, cellSize, method_peaks, myFun, LASPathIn, PathOut)
-  % This script aims to batch process over the same dataset
-  % multiple times with varying values of key parameters, like searchradius, bandwidth, etc...
+function funPeaks(pc, minTreeHeight_min, minTreeHeight_max, minTreeHeight_step, minHeightDifference, cellSize, method_peaks, searchRadius_peaks, LASPathIn, PathOut)
+  % This script aims to batch process over the same dataset multiple times with varying values of key parameters, like searchradius, bandwidth, etc...
   %
-  % Syntax:  [] = funPeaks(minTreeHeight_min, minTreeHeight_max, minTreeHeight_step, minHeightDifference, cellSize, method_peaks, myFun, LASPathIn, PathOut)
+  % Syntax:  [] = funPeaks(minTreeHeight_min, minTreeHeight_max, minTreeHeight_step, minHeightDifference, cellSize, method_peaks, searchRadius_peaks, LASPathIn, PathOut)
   %
   % Inputs:
+  %    pc - point cloud to treat
   %    minTreeHeight_min -  min of the range to be explored for the minimum tree top height
   %    minTreeHeight_max - max of  the range to be explored for the minimum tree top height
   %    minTreeHeight_step - step between min and max to test
   %    minHeightDifference - targeted minimum height difference to remains after Hmaxima smoothing.
+  %    cellSize - cell size for the terrain model
   %    method_peaks - choice between 'default' and 'hmax', see canopyPeaks.m
+  %    searchRadius_peaks - anonymous function handle of the form @(h) = ..., specifying the radius (as a function of height)
+  %       for the circular convolution window used to detect local maxima.
   %    LASPathIn - entire path of input LAS file
   %    PathOut - folder path where to write the output files
   %
@@ -20,9 +23,9 @@ function funPeaks(pc, minTreeHeight_min, minTreeHeight_max, minTreeHeight_step, 
   %
   % Example:
   %
-  %    funPeaks(2, 15, 13, 0.1, 0.8, 'default', myFun, 'C:\myLAS.las', 'C:\myOutputFolder\')
+  %    funPeaks(2, 15, 13, 0.1, 0.8, 'default', searchRadius_peaks, 'C:\myLAS.las', 'C:\myOutputFolder\')
   %
-  % Source: this function derives mainly from the tutorials of the Matlab Digital Forestry Toolbox.
+  % Source: this function derives mainly from the tutorials of the Matlab Digital Forestry Toolbox, https://mparkan.github.io/Digital-Forestry-Toolbox/tutorial-2.html
 
   clc
   close all
@@ -78,13 +81,17 @@ function funPeaks(pc, minTreeHeight_min, minTreeHeight_max, minTreeHeight_step, 
   %% Write parameter data to a csv file for later use.
 
   fid = fopen(strcat(PathOut, FileNameOut, '_parameters.csv'), 'w+'); % open file
+  if fid==-1
+    mkdir(PathOut);
+    fid = fopen(strcat(PathOut, FileNameOut, '_parameters.csv'), 'w+');
+  endif
   fprintf(fid, strcat('Batch identifier : ', FileNameOut, '\n'));
   fprintf(fid, 'Batch peak detection initiated on %d-%d-%d at %d:%d:%d.\n', c2(3), c2(2), c2(1), c2(4), c2(5), c2(6)); % write date and time
   fprintf(fid, 'Parameter explored,minTreeHeight\n');
   fprintf(fid, 'Range explored : from %f to %f with steps of %f,%f,%f,%f\n', minVal, maxVal, stepVal, minVal, maxVal, stepVal);
   fclose(fid); % close file
 
-  fprintf('Successfully wrote parameter values to csv file.\n')
+  fprintf('Successfully wrote parameter values to csv file.\n');
 
 
 
@@ -103,7 +110,7 @@ function funPeaks(pc, minTreeHeight_min, minTreeHeight_max, minTreeHeight_step, 
         refmat, ...
         'method', method_peaks, ...
         'minTreeHeight', minTreeHeight, ... % minimum tree top height
-        'searchRadius', myFun, ... %0.28 * h^0.59, ...
+        'searchRadius', searchRadius_peaks, ... %0.28 * h^0.59, ...
         'minHeightDifference', minHeightDifference, ... % 0.1, 0.3
         'fig', false, ...
         'verbose', true);
@@ -160,6 +167,9 @@ function funPeaks(pc, minTreeHeight_min, minTreeHeight_max, minTreeHeight_step, 
         255,255,153;
         177,89,40] ./ 255;
 
+    %% Step 8 - Plotting the colored points cloud
+    % This step is discouraged in Octave and not useful to this project.
+
 
     %% Step 9 - Computing segment metrics from the labelled point cloud
 
@@ -179,6 +189,10 @@ function funPeaks(pc, minTreeHeight_min, minTreeHeight_max, minTreeHeight_step, 
 
     % list field names
     sfields = fieldnames(metrics_3d);
+
+
+    %% Step 10 - Exporting the segment metrics to a CSV file
+    % Not needed in this project. The information is saved in the shp file.
 
 
     %% Step 11 - Exporting the segment points (and metrics) to a SHP file
