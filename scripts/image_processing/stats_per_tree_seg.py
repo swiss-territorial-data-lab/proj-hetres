@@ -84,6 +84,7 @@ clipped_beeches=clipped_beeches[~clipped_beeches.is_empty]
 logger.info('Getting the statistics of trees...')
 beeches_stats=pd.DataFrame()
 BANDS={1: 'rouge', 2: 'vert', 3: 'bleu', 4: 'proche IR'}
+CHANNELS={1: 'rouge', 2: 'vert', 3: 'bleu', 4: 'proche IR',5:'ndvi'}                                                                    
 calculated_stats=['min', 'max', 'mean', 'median', 'std']
 
 single_beeches = pd.DataFrame()
@@ -107,6 +108,7 @@ for beech in tqdm(clipped_beeches.itertuples(),
         #stats_dict_rgb['no_arbre']=beech.no_arbre
         stats_dict_rgb['segID']=beech.segID #CONTINUOUS
         stats_dict_rgb['band']=BANDS[band_num]
+        stats_dict_rgb['area']= beech.geometry.area                                                   
         # stats_dict_rgb['health_status']=beech.etat_sanitaire #CONTINUOUS
 
         beeches_stats=pd.concat([beeches_stats, pd.DataFrame(stats_dict_rgb, index=[0])], ignore_index=True)
@@ -118,6 +120,7 @@ for beech in tqdm(clipped_beeches.itertuples(),
     #stats_dict_rgb['no_arbre']=beech.no_arbre
     stats_dict_ndvi['segID']=beech.segID #CONTINUOUS
     stats_dict_ndvi['band']='ndvi'
+    stats_dict_ndvi['area']= beech.geometry.area                                                
     # stats_dict_ndvi['health_status']=beech.etat_sanitaire #CONTINUOUS
 
     beeches_stats=pd.concat([beeches_stats, pd.DataFrame(stats_dict_ndvi, index=[0])], ignore_index=True)

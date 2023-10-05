@@ -290,7 +290,7 @@ mergeVectors<-function(datadir, datadir2, extension, extension2, output, output2
   q0$segID <- seq.int(nrow(q0)) 
   r0 <- r0[,-c(1)]
   q0 <- q0[,-c(1)]
-  
+
   file.remove(paste0(SIM_DIR,output))
   st_write(r0, paste0(SIM_DIR,output))
   file.remove(paste0(SIM_DIR,output2))

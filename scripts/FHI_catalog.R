@@ -182,7 +182,7 @@ norm_chunk <- function(chunk){
 ##########################################
 
 ### Define simulation parameters ###
-Sys.setenv(R_CONFIG_ACTIVE = "production")
+Sys.setenv(R_CONFIG_ACTIVE = "default")
 config <- config::get(file="config/config_FHI.yml")
 
 WORKING_DIR <- config$WORKING_DIR

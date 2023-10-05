@@ -33,7 +33,7 @@ No specific requirements.
    ├── funPeaks_batch.m           # script to segment all the LAS files in a folder 
    ├── mergeData_inpoly.R         # prepare descriptors and response variables table for RF  
    ├── RF.R                       # random Forest routine (dataset split, training, optimization, prediction)
-   └── subsampleLAS.py            # subsample LiDAR point cloud by a factor 5
+   └── downsampleLAS.py            # downsample LiDAR point cloud by a factor 5
 └── setup                         # utility to setup the environment
 ```
 
@@ -42,11 +42,12 @@ No specific requirements.
 Scripts are run in combination with their hard-coded configuration files in the following order: 
 
 1. `data_preparation/downloadNDVIdiff.py`
-2. `data_preparation/subsampleLAS.py`
-3. `image_processing/filter_images.py`
-4. `funPeaks_batch.m`
-5. `FHI_catalog.R`
-6. `images_processing/calculate_ndvi.py`
+2. `data_preparation/downsampleLAS.py`
+3. `scripts/data_preparation/generateAOIvector.py`
+3. `images_processing/calculate_ndvi.py`
+4. `image_processing/filter_images.py`
+5. `funPeaks_batch.m`
+6. `FHI_catalog.R`
 7. `images_processing/stats_per_tree.py`
 8. `mergeData_inpoly.R`
 9. `RF.R`
@@ -71,17 +72,33 @@ The following abbreviations are used:
 
 ```
 python scripts/data_preparation/downloadNDVIdiff.py
-python scripts/data_preparation/subsampleLAS.py
-python scripts/image_processing/filter_images.py
+python scripts/data_preparation/downsampleLAS.py
+python scripts/data_preparation/generateAOIvector.py
+python scripts/image_processing/calculate_ndvi.py
 ```
-
+1. Compute the NDVI images using the red and NIR bands,
+	* When processing original data
+	```
+	ortho_directory: 01_initial/true_orthophoto/original/tiles
+	ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi
+	```
+	* When processing downsampled data
+	```
+	ortho_directory: 02_intermediate/true_orthophoto/downsampled/tiles
+	ndvi_directory: 02_intermediate/true_orthophoto/downsampled/ndvi
+	```
+```
+python scripts/image_processing/filter_images.py
+```	
 Those code lines perform the following tasks:
 
 1. The yearly NDVI differences are downloaded from waldmonitoring.ch. 
-2. The LiDAR point clouds are subsampled to have a similar density as the swisstopo product swissSURFACE3D.
-3. The true orthophoto tiles are subsampled to have a similar spatial resolution as the swisstopo product SWISSIMAGE RS.
+2. The LiDAR point clouds are downsampled to have a similar density as the swisstopo product swissSURFACE3D.
+3. AOI tiling vector polygons based on input orthophoto tiles 
+4. The NDVI rasters corresponding to the aerial images are computed. 
+5. The true orthophoto tiles are downsampled to have a similar spatial resolution as the swisstopo product SWISSIMAGE RS.
 
-The second and third steps are facultative. The whole project can be run on the original or subsampled data.
+The second and third steps are facultative. The whole project can be run on the original or downsampled data.
 
 ### Tree segmentation from LiDAR point cloud
 The segmentation of trees in the LAS point cloud is performed using the Digital Forestry Toolbox on Matlab/Octave:
@@ -97,7 +114,7 @@ The segmentation of trees in the LAS point cloud is performed using the Digital 
 	DIR_IN = '01_initial\lidar_point_cloud\original\'
 	DIR_OUT = '02_intermediate\lidar_point_cloud\original\dft_outputs\'
 	```
-	* When processing subsampled data
+	* When processing downsampled data
 	```
 	DIR_IN = '02_intermediate\lidar_point_cloud\downsampled\'
 	DIR_OUT = '02_intermediate\lidar_point_cloud\downsampled\dft_outputs\' 
@@ -114,7 +131,7 @@ Structural descriptors are computed via RStudio, partly after the article from P
 	 DIR_LAS: "02_intermediate/lidar_point_cloud/original/dft_outputs/"
 	 SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
 	```
-	* When processing subsampled data
+	* When processing downsampled data
 	```
 	 DIR_LAS: "02_intermediate/lidar_point_cloud/downsampled/dft_outputs/"
 	 SIM_DIR: "02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/"
@@ -124,30 +141,19 @@ Structural descriptors are computed via RStudio, partly after the article from P
 Image processing is performed on 4-bands images to extract health information. The correct input and output directories and files have to be given in the `config/config_ImPro.yaml` file.
 
 ```
-python scripts/image_processing/calculate_ndvi.py
 python scripts/image_processing/stats_per_tree_gt.py
 python scripts/image_processing/stats_per_tree_seg.py
 ```
 
-1. Compute the NDVI images using the red and NIR bands,
-	* When processing original data
-	```
-	ortho_directory: 01_initial/true_orthophoto/original/tiles
-	ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi
-	```
-	* When processing subsampled data
-	```
-	ortho_directory: 02_intermediate/true_orthophoto/downsampled/tiles
-	ndvi_directory: 02_intermediate/true_orthophoto/downsampled/ndvi
-	```
-2. Compute the statistics (min, max, mean, median, std) per band for the GT trees,
+
+1. Compute the statistics (min, max, mean, median, std) per band for the GT trees,
 	* Don’t use the height filter, since the polygons are adjusted on the crown. 
 	* Specify parameters in  the `config/config_ImPro.yaml` config file: 
 	```
 	use_height_filter: false
 	beech_file: 02_intermediate/ground_truth/STDL_releves_poly_ok.gpkg
 	```	
-3. Compute the statistics (min, max, mean, median, std) per band for the segmented trees,
+2. Compute the statistics (min, max, mean, median, std) per band for the segmented trees,
 	* Use the height filter to mask understory pixels. 
 	* Specify parameters in  the `config/config_ImPro.yaml` config file: 
 	```

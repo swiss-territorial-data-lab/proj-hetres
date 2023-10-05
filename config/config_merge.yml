@@ -1,19 +1,9 @@
 default:
- WORKING_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data"
- SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
- TRAIN_DATA : FALSE
+ WORKING_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/proj-hetres/data"
+ SIM_DIR: "02_intermediate/lidar_point_cloud/downsampled/fhi_outputs/"
+ TRAIN_DATA : false
 #  PATH_GT: "02_intermediate/ground_truth/STDL_releve_point_ok.shp" #"C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/v0_hmax_2p5/mosaic_peaks.shp" ##
- PATH_GT: "02_intermediate/ground_truth/GT_2p0_poly.shp"
- SIM_STATS_DIR: "02_intermediate/true_orthophoto/original/tables/seg/"
+ PATH_GT: "02_intermediate/ground_truth/GT_3p0_poly.shp"
+ SIM_STATS_DIR: "02_intermediate/true_orthophoto/downsampled/tables/seg/"
  NDVI_DIR: "02_intermediate/satellite_images/ndvi_diff/"
- RF_DIR: "02_intermediate/rf/original/"
- 
-production:
- WORKING_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/data"
- SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
- TRAIN_DATA : False
-#  PATH_GT: "02_intermediate/ground_truth/STDL_releve_point_ok.shp" #"C:/Users/cmarmy/Documents/STDL/Beeches/proj-hetres/03_Scripts/FHI/v0_hmax_2p5/mosaic_peaks.shp" ##
- PATH_GT: "02_intermediate/ground_truth/GT_2p0_poly.shp"
- SIM_STATS_DIR: "02_intermediate/true_orthophoto/original/tables/seg/"
- NDVI_DIR: "02_intermediate/satellite_images/ndvi_diff/"
- RF_DIR: "02_intermediate/rf/original/"
+ RF_DIR: "02_intermediate/rf/subsampled/"

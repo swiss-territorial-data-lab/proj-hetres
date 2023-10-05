@@ -20,13 +20,13 @@ library(DeltaMAN)
 library(sf)
 library(terra)
 
-set.seed(222)
+set.seed(2)
 
 source("scripts/functions/functions.R")
 
 
 ### Define simulation parameters ###
-Sys.setenv(R_CONFIG_ACTIVE = "production")
+Sys.setenv(R_CONFIG_ACTIVE = "default")
 config <- config::get(file="config/config_RF.yml")
 
 WORKING_DIR <- config$WORKING_DIR
@@ -36,13 +36,12 @@ SIM_DIR <- config$SIM_DIR
 DESC <- config$DESCRIPTORS
 CUTOFF <- config$CUTOFF
 
-RF_PRED <- config$RF_PRED
 
 setwd(WORKING_DIR)
 
 ### Dataset for Random Forest ###
-data_all <- read.csv(paste0(RF_DIR,"all_desc_GT_nohf_poly.csv"))
-data_topredict <- read.csv(paste0(RF_DIR,"all_desc_seg_hf_poly.csv"))
+data_all <- read.csv(paste0(RF_DIR,"desc_GT_new_nohf_poly_2p5m.csv"))
+data_topredict <- read.csv(paste0(RF_DIR,"desc_seg_nohf_poly.csv"))
 
 # data_tmp<-na.omit(data_all)
 # res <- cor(data_tmp[,c(28:52)], method='pearson')
@@ -54,23 +53,36 @@ data_topredict <- read.csv(paste0(RF_DIR,"all_desc_seg_hf_poly.csv"))
 ## Choose descriptors ##
 data = switch(  
   DESC,  
-  "all"= data_all[,c(1,2,4:10,18:21,22:28,29:78)],
+  "all"= data_all[,c(1,2,4:10,18:21,22:28,29:53)],#c(1,2,4:10,18:21,22:28,29:53)],
+  "custom" =  data_all[,c(1,2,11:21,22:28,29:53)],
   "NDVI_diff" = data_all[,c(1,2,22:28)],
-  "Structural params" = data_all[,c(1,2,4:10,18:21)],
-  "Sat&PCA" = data_all[,c(1,2,29:78)],
+  "structural" = data_all[,c(1,2,4:10,18:21)],
+  "structural_grid" = data_all[,c(1,2,11:21)],
+  "stats" = data_all[,c(1,2,29:53)],
   "PCA" = data_all[,c(1,2,54:78)],
-  "custom" =  data_all[,c(1,2,22:28,29:78)]
+  "stats&PCA" = data_all[,c(1,2,29:78)],
+  "VHI" = data_all[,c(1:16)], #names(data)[1]="ID" names(data)[2] = "CLASS_SAN"
+  "bcustom" =  data_all[,c(1,2,4:10,18:21,22:28)],
+  "bcustom_g" =  data_all[,c(1,2,11:28)],
+  "ccustom" = data_all[,c(1,2,22:53)],								  
 )  
 
+data_topredict <-na.omit(data_topredict)
 data_topredict <- switch(  
   DESC,  
-  "all"= data_all[,c(1,2,4:10,18:21,22:28,29:78)],
-  "NDVI_diff" = data_all[,c(1,2,22:28)],
-  "Structural params" = data_all[,c(1,2,4:10,18:21)],
-  "Sat&PCA" = data_all[,c(1,2,29:78)],
-  "PCA" = data_all[,c(1,2,54:78)],
-  "custom" =  data_all[,c(1,2,22:28,29:78)]
-)  
+  "all"= data_topredict[,c(1,2,4:10,18:21,22:28,29:53)],#c(1,2,4:10,18:21,22:28,29:53)],
+  "custom" =  data_topredict[,c(1,2,11:21,22:28,29:53)],
+  "NDVI_diff" = data_topredict[,c(1,2,22:28)],
+  "structural" = data_topredict[,c(1,2,4:10,18:21)],
+  "structural_grid" = data_topredict[,c(1,2,11:21)],
+  "stats" = data_topredict[,c(1,2,29:53)],
+  "PCA" = data_topredict[,c(1,2,54:78)],
+  "stats&PCA" = data_topredict[,c(1,2,29:78)],
+  "VHI" = data_topredict[,c(1:16)], #names(data)[1]="ID" names(data)[2] = "CLASS_SAN"
+  "bcustom" =  data_topredict[,c(1,2,4:10,18:21,22:28)],
+  "bcustom_g" =  data_topredict[,c(1,2,11:28)],
+  "ccustom" = data_topredict[,c(1,2,22:53)],
+)
 
 ## Choose response variable ##
 data<- na.omit(data)
@@ -78,6 +90,9 @@ data<-data[data$ID!=102,]
 data<-data[data$ID!=112,]
 data<-data[data$ID!=190,]
 data<-data[data$ID!=227,]
+data<-data[data$ID!=96,] # nodata in LiDAR descriptor set
+data<-data[data$ID!=304,] # nodata in downgraded data
+#data<-data[data$ID!=47,] # nodata in NDVI_diff point descriptor set						
 data$CLASS_SAN <- as.factor(data$CLASS_SAN)
 data$CLASS_SAN<- ordered(data$CLASS_SAN, levels =c("10","20","30")) 
 # table(test$CLASS_SAN)
@@ -88,11 +103,18 @@ inds <- partition(data$CLASS_SAN, p = c(train = 0.7, test = 0.3))
 train_out <- data[inds$train, ]
 test_out <- data[inds$test, ]
 
+# load(paste0(RF_DIR,"ID_test.RData"))
+# ind <- is.element(data$ID,tmp)
+# test_out<- data[ind,]
+# train_out<- data[!ind,]
+
 train <- subset(train_out, select = -c(1))
 test <- subset(test_out, select = -c(1))
 # table(test$CLASS_SAN)
 # table(train$CLASS_SAN)
 
+# tmp<-test_out$ID
+# save(tmp,file=paste0(RF_DIR,DESC,"_ID_test.RData"))			  
 
 
 ### Train and test RF model ###
@@ -158,6 +180,11 @@ if (sum(tuning[1,]==max(as.data.frame(tuning[1,])) & tuning[2,]==min(as.data.fra
   best_model<-tuning[,which((tuning[2,]==min(as.data.frame(tuning[2,]))),arr.ind=TRUE)]
 }
 
+
+rf_beech<-best_model$finalModel
+save(rf_beech,file = paste0(RF_DIR,DESC,"_rf_beech.RData"))
+rm(rf_beech)
+# load(paste0(RF_DIR,DESC,"_rf_beech.RData"))
 ########## Chose the best model ###########
 
 tiff(file=paste0(RF_DIR,DESC,"_VarImp.tif"),res=100, width = 1000, height = 1000)
@@ -181,7 +208,7 @@ desc_fname = paste0(RF_DIR,DESC,"_important_descriptors.csv")
 pred_fname = paste0(RF_DIR,DESC,"_testset_prediction.csv")
 
 write.table(out, file = out_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
-write.table(cf$table, file = cM_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
+write.table(cf$table, file = cf_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
 write.table(cbind(row.names(best_model$finalModel$importance),best_model$finalModel$importance[,5]), file = desc_fname, sep = ",", append = TRUE, quote = FALSE, col.names = FALSE, row.names = FALSE)
 
 pred_test<- predict(best_model$finalModel,test)
@@ -204,4 +231,5 @@ names(pred)<-c("ID","pred", "prb_sain", "prb_déclin","prb_mort", "prb_pred")
 coord <-st_read(paste0(SIM_DIR,"mosaic_seg_params.shp"))
 
 coord_pred <- merge(coord,pred, by.x = "segID", by.y = "ID")
-st_write(coord_pred, paste0(RF_DIR,RF_PRED),append=FALSE)
+coord_pred <- merge(coord,pred, by.x = "segID", by.y = "ID")
+st_write(coord_pred, paste0(RF_DIR,DESC,"_pred.shp"),append=FALSE)

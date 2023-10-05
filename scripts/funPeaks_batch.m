@@ -4,12 +4,13 @@
 ############################### INPUTS #########################################
 #   DIR_IN : input directory with LAS files
 #   DIR_OUT : directory for output files
+#   OVERWRITE :
 
-WORKING_DIR='C:\Users\gwena\Documents\STDL\2_En_cours\deperissement-hetres\02_Data';
-DIR_IN =strcat(WORKING_DIR,  '02_intermediate\lidar_point_cloud\downsampled\');
-DIR_OUT = strcat(WORKING_DIR, '02_intermediate\lidar_point_cloud\downsampled\dft_outputs\');
+WORKING_DIR='C:\Users\cmarmy\Documents\STDL\Beeches\delivery\proj-hetres\data\';
+DIR_IN =strcat(WORKING_DIR,  '01_initial\lidar_point_cloud\original\');
+DIR_OUT = strcat(WORKING_DIR, '02_intermediate\lidar_point_cloud\original\dft_outputs\');
 
-OVERWRITE=0;
+OVERWRITE=1;
 ################################################################################
 
 

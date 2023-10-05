@@ -238,7 +238,7 @@ def clip_labels(labels_gdf, tiles_gdf, fact=0.99):
 
     tiles_gdf['tile_geometry'] = tiles_gdf['geometry']
         
-    assert(labels_gdf.crs == tiles_gdf.crs)
+    assert(labels_gdf.crs.name == tiles_gdf.crs.name)
     
     labels_tiles_sjoined_gdf = gpd.sjoin(labels_gdf, tiles_gdf, how='inner', predicate='intersects')
     
@@ -259,7 +259,7 @@ def clip_labels(labels_gdf, tiles_gdf, fact=0.99):
 
     return clipped_labels_gdf
 
-def get_ortho_tiles(tiles, PATH_ORIGINAL, PATH_NDVI, WORKING_DIR=None):
+def get_ortho_tiles(tiles, FOLDER_PATH_IN, FOLDER_PATH_OUT, WORKING_DIR=None):
     '''
     Get the true orthorectified tiles and the corresponding NDVI file based on the tile name.
 
@@ -277,14 +277,11 @@ def get_ortho_tiles(tiles, PATH_ORIGINAL, PATH_NDVI, WORKING_DIR=None):
     ndvi_pathes=[]
 
     for tile_name in tiles['NAME'].values:
-        if tile_name.startswith('257'):
-            rgb_pathes.append(os.path.join(PATH_ORIGINAL, 'North_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
-            ndvi_pathes.append(os.path.join(PATH_NDVI, tile_name + '_NDVI.tif'))
+                                       
+        rgb_pathes.append(os.path.join(FOLDER_PATH_IN, tile_name + '.tif'))
+        ndvi_pathes.append(os.path.join(FOLDER_PATH_OUT, tile_name + '_NDVI.tif'))
 
-        elif tile_name.startswith('258'):
-            rgb_pathes.append(os.path.join(PATH_ORIGINAL, 'South_ortho_JUHE_LV95_NF02_3cm_' + tile_name + '.tif'))
-            ndvi_pathes.append(os.path.join(PATH_NDVI, tile_name + '_NDVI.tif'))
-
+               
     tiles['path_RGB']=rgb_pathes
     tiles['path_NDVI']=ndvi_pathes
 

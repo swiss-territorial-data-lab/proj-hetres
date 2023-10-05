@@ -1,5 +1,5 @@
-# This script subsamples an LiDAR point cloud (LAS format) for a factor of 5 (can be changed in scripts).
-# It outputs the corresponding subsampled LAS files to the input files. 
+# This script downsamples a LiDAR point cloud (LAS format) for a factor of 5 (can be changed in scripts).
+# It outputs the corresponding downsampled LAS files of the input files. 
 
 import os, sys
 import laspy
@@ -15,7 +15,7 @@ logger=fct_misc.format_logger(logger)
 #   DIR_IN : input directory with LAS files
 #   DIR_OUT : directory for output files
 
-WORKING_DIR='C:/Users/gwena/Documents/STDL/2_En_cours/deperissement-hetres/02_Data'
+WORKING_DIR='C:/Users/cmarmy/Documents/STDL/Beeches/delivery/proj-hetres/data'
 os.chdir(WORKING_DIR)
 
 PATH_IN = "01_initial/lidar_point_cloud/original"
@@ -51,8 +51,8 @@ if __name__ == "__main__":
             if fnmatch(name, pattern):
                 list_name.append(name)
 
-    logger.info(f'Found {len(list_name)} files to subsample.')
-    logger.info(f'Subsampling files...')
+    logger.info(f'Found {len(list_name)} files to downsample.')
+    logger.info(f'Downsampling files...')
     main(PATH_IN, PATH_OUT, list_name)
 
     logger.success(f'The new files were written in the folder {PATH_OUT}.')
