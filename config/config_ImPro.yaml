@@ -1,0 +1,28 @@
+calculate_ndvi.py:
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/proj-hetres/data
+  inputs:
+    ortho_directory: 01_initial/true_orthophoto/original/tiles
+    tile_delimitation: 02_intermediate/AOI/AOI.shp
+  ndvi_output_directory: 02_intermediate/true_orthophoto/original/ndvi
+
+filter_images.py:
+  original_ortho: true
+  filter_type: "downsampling"    # valid values: "gaussian", "downsampling", "sieve" and "thresholds"
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/proj-hetres/data
+  inputs: 
+    ortho_directory: 01_initial/true_orthophoto/original/tiles
+    ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi
+  destination_directory: 02_intermediate/true_orthophoto/downsampled/tiles
+  tile_delimitation: 02_intermediate/AOI/AOI.shp
+
+stats_per_tree.py:
+  GT: true
+  use_height_filter: false
+  working_directory: C:/Users/cmarmy/Documents/STDL/Beeches/delivery/proj-hetres/data
+  inputs:
+    ortho_directory: 01_initial/true_orthophoto/original/tiles
+    ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi
+    chm: 02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_chm.tif 
+    tile_delimitation: 02_intermediate/AOI/AOI.shp
+    beech_file: 02_intermediate/ground_truth/GT_3p0_poly.gpkg # 02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp #
+  output_directory: 02_intermediate/true_orthophoto/original/

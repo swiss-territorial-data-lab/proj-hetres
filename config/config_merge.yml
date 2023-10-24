@@ -1,0 +1,8 @@
+default:
+ WORKING_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/proj-hetres/data"
+ SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
+ TRAIN_DATA : true
+ PATH_GT: "02_intermediate/ground_truth/GT_3p0_poly.shp"
+ SIM_STATS_DIR: "02_intermediate/true_orthophoto/original/tables/gt/"
+ NDVI_DIR: "02_intermediate/satellite_images/ndvi_diff/"
+ RF_DIR: "02_intermediate/rf/original/"

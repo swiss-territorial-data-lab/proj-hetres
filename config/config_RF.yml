@@ -1,0 +1,6 @@
+default:
+ WORKING_DIR: "C:/Users/cmarmy/Documents/STDL/Beeches/delivery/proj-hetres/data"
+ SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
+ RF_DIR: "02_intermediate/rf/original/"
+ DESCRIPTORS: "all" # all, NDVI_diff, structural, stats, custom
+ CUTOFF: [0.33,0.33,0.33] # [0.2, 0.2, 0.2, 0.2, 0.2] # [0.35,0.29,0.33] 
