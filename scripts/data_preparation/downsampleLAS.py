@@ -3,7 +3,6 @@
 
 import os, sys
 import laspy
-from fnmatch import fnmatch
 from loguru import logger
 
 sys.path.insert(1, 'scripts')
@@ -42,13 +41,13 @@ def main(path_in, path_out, files_name):
 if __name__ == "__main__":
 
     # --->> TO ADAPT <<---
-    pattern = "*.las"
+    pattern = ".las"
     list_name = []
 
     logger.info('Finding all the relevant files...')
     for _, _, files in os.walk(PATH_IN):
         for name in files:
-            if fnmatch(name, pattern):
+            if name.endswith(pattern):
                 list_name.append(name)
 
     logger.info(f'Found {len(list_name)} files to downsample.')

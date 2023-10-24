@@ -1,5 +1,4 @@
 import os, sys
-from fnmatch import fnmatch
 import numpy as np
 import pandas as pd
 import geopandas as gpd
@@ -19,7 +18,6 @@ import functions.fct_misc as fct_misc
 #   DIR_IN : input directory with LAS files
 #   DIR_OUT : directory for output files
 
-
 WORKING_DIR='C:/Users/cmarmy/Documents/STDL/Beeches/delivery/proj-hetres/data'
 os.chdir(WORKING_DIR)
 
@@ -28,7 +26,6 @@ PATH_OUT = fct_misc.ensure_dir_exists("02_intermediate/AOI")
 fct_misc.ensure_dir_exists("02_intermediate/AOI/tiles") 
 
 ################################################################################
-# This script ...
 
 def main(PATH_IN, files_name):
     
@@ -39,7 +36,7 @@ def main(PATH_IN, files_name):
 
         with rasterio.open(_tif) as src:
             image=src.read(1)
-            gdf = gpd.GeoDataFrame.from_features(dataset_features(src, bidx=1, as_mask=True, geographic=False, band=False))
+            gdf = gpd.GeoDataFrame.from_features(dataset_features(src, bidx=2, as_mask=True, geographic=False, band=False))
             gdf.set_crs(crs=src.crs, inplace=True)
             gdf.filename=_name.replace('.tif', '')
             gdf.to_file(os.path.join(PATH_OUT,'tiles',_name.replace('.tif', '.shp')))
@@ -58,13 +55,13 @@ if __name__ == "__main__":
     CUR_DIR = os.getcwd()
 
     root = PATH_IN
-    pattern = "*.tif"
+    pattern = ".tif"
     list_name = []
     list_las = []
 
     for path, subdirs, files in os.walk(root):
         for name in files:
-            if fnmatch(name, pattern):
+            if name.endswith(pattern):
                 list_name.append(name)
                 list_las.append(os.path.join(path, name))
 

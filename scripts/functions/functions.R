@@ -8,7 +8,7 @@
 #> - mergeVectors: merge the segmented trees and the peaks of all the files produced 
 #>              by FHI_catalog.R into two files for segments and peaks. 
 #>              Only keep peeks corresponding to a segment.
-#> - mySummary: customized summary function: 1. minimizing unhealthy->healthy, 
+#> - summaryRFmetrics: customized summary function: 1. minimizing unhealthy->healthy, 
 #>              dead->healthy and dead->unhealthy, 2. computing linear weighted 
 #>              kappa. 
 
@@ -84,7 +84,7 @@ metricsParams <- function(z,rn,intnst) {
       }
     }
     
-    cvlad <- sqrt(1/((n-sum(is.na(ladh)))-1)*sum((ladh-mean(ladh,na.rm=T))^2,na.rm=T))/mean(ladh,na.rm=T) # ?? changer n si des lad ont une valeur nulle ?
+    cvlad <- sqrt(1/((n-sum(is.na(ladh)))-1)*sum((ladh-mean(ladh,na.rm=T))^2,na.rm=T))/mean(ladh,na.rm=T)
     
     
     # 5. Vertical Complexity Index
@@ -205,7 +205,7 @@ crownMetricsParams <- function(z,label,rn,intnst) {
       }
     }
     
-    cvlad <- sqrt(1/((n-sum(is.na(ladh)))-1)*sum((ladh-mean(ladh,na.rm=T))^2,na.rm=T))/mean(ladh,na.rm=T) # ?? changer n si des lad ont une valeur nulle ?
+    cvlad <- sqrt(1/((n-sum(is.na(ladh)))-1)*sum((ladh-mean(ladh,na.rm=T))^2,na.rm=T))/mean(ladh,na.rm=T)
     
     
     # 5. Vertical Complexity Index
@@ -262,7 +262,7 @@ mergeVector<-function(wkdir, extension, output){
     r0<-rbind(r0,r)
   }
   r0$segID <- seq.int(nrow(r0)) 
-  r0 <- r0[,-c(1)]
+  r0 <- r0[,-c("geometry")]
   
   file.remove(paste0(SIM_DIR,output))
   st_write(r0, paste0(SIM_DIR,output))
@@ -281,7 +281,7 @@ mergeVectors<-function(datadir, datadir2, extension, extension2, output, output2
     q <- as.data.frame(st_read(files2[i]))
     q <- q[,c(2,9)]
     
-    ind <- is.element(q[,c(1)],r[,c(1)])
+    ind <- is.element(q[,c("LUID......")],r[,c("treeID")])
     
     r0<-rbind(r0,r)
     q0<-rbind(q0,q[ind,])
@@ -291,13 +291,11 @@ mergeVectors<-function(datadir, datadir2, extension, extension2, output, output2
   r0 <- r0[,-c(1)]
   q0 <- q0[,-c(1)]
 
-  file.remove(paste0(SIM_DIR,output))
   st_write(r0, paste0(SIM_DIR,output))
-  file.remove(paste0(SIM_DIR,output2))
   st_write(q0, paste0(SIM_DIR,output2))
 }
 
-mySummary <- function(data, lev=NULL, model=NULL){
+summaryRFmetrics <- function(data, lev=NULL, model=NULL){
   cf <- confusionMatrix(data$obs, data$pred)
   fdr <- (cf[["table"]][1,2] + cf[["table"]][1,3] + cf[["table"]][2,3]) / sum(cf[["table"]][,2:3]) # false detection rate
   wgthd_kappa <- as.numeric(Kappa(cf[["table"]], r = 1, alternative = c("two.sided"), conf.level = 0.95, partial = FALSE)[1])

@@ -155,9 +155,8 @@ norm_chunk <- function(chunk){
   ## Put everything together (SpatRaster and table)
   params_spat <- c(las_params_ext, sdcc_ext, sdchm)
   params_frame<-data.frame(params_spat)
-  data <- params_frame[, c(1,2,3,4,5,6,7,8)]
 
-
+  
 
   ### Write outputs ###
   writeRaster(params_spat, paste0(chunk@save,"_params.tif"), overwrite=TRUE)
@@ -210,6 +209,7 @@ ctg <- readLAScatalog(DIR_LAS)
 opt_output_files(ctg) <- paste0(SIM_DIR, "/{*}")
 options <- list(automerge = TRUE)
 ctg@output_options$drivers$Raster$param$overwrite <- TRUE
+ctg@output_options$drivers$Vector$param$overwrite <- TRUE
 ctg@output_options$drivers$Spatial$param$overwrite <- TRUE
 output <- catalog_apply(ctg, norm_chunk, .options=options)
 

@@ -56,11 +56,11 @@ if (TRAIN) {
 if (TRAIN) {
   seg_params <- st_read(paste0(SIM_DIR,"mosaic_seg_params.shp")) 
   RESP_params<-st_join(RESP, seg_params,join=st_intersects,left=FALSE, right=FALSE)
-  RESP_params<-RESP_params[,c(1:2,10,3:9)]
+  RESP_params<-RESP_params[,c("CLASS_SAN","ID","segID","zq99_seg","alpha_seg","beta_seg","cvlad_seg","vci_seg","i_mean_seg","i_sd_seg")]
   RESP_params <- RESP_params[!duplicated(RESP_params$ID),]
 }else{
   RESP_params<-st_read(paste0(SIM_DIR,"mosaic_seg_params.shp")) 
-  RESP_params<-RESP_params[,c(8,8,8,1:7,9)]
+  RESP_params<-RESP_params[,c("segID","segID","segID","zq99_seg","alpha_seg","beta_seg","cvlad_seg","vci_seg","i_mean_seg","i_sd_seg","geometry")]
   names(RESP_params)<-c("CLASS_SAN","ID","segID","zq99_seg","alpha_seg","beta_seg","cvlad_seg","vci_seg","i_mean_seg","i_sd_seg","geometry")
 }
 
@@ -90,28 +90,29 @@ RESP_params<-as.data.frame(RESP_params)
 
 ## Stats and PCA coordinates from aerial imagery
 image_params <- read.csv(paste0(SIM_STATS,"beech_stats.csv"))
+names(image_params)<-c("X","min","max","mean","std","median","id","band","health_status","area")
 
-blue_b <- image_params[image_params$band=="bleu",][,c(2:7)]
+blue_b <- image_params[image_params$band=="bleu",][,c("min","max","mean","std","median","id")]
 names(blue_b) = c("b_min","b_max","b_mean","b_std", "b_median","id")
 blue_b <- blue_b[!duplicated(blue_b$id),]
 RESP_params<-merge(RESP_params,blue_b, by.x = "ID", by.y = "id")
 
-red_b <- image_params[image_params$band=="rouge",][,c(2:7)]
+red_b <- image_params[image_params$band=="rouge",][,c("min","max","mean","std","median","id")]
 names(red_b) = c("r_min","r_max","r_mean","r_std", "r_median","id")
 red_b <- red_b[!duplicated(red_b$id),]
 RESP_params<-merge(RESP_params,red_b, by.x = "ID", by.y = "id", all=FALSE)
 
-green_b <- image_params[image_params$band=="vert",][,c(2:7)]
+green_b <- image_params[image_params$band=="vert",][,c("min","max","mean","std","median","id")]
 names(green_b) = c("g_min","g_max","g_mean","g_std", "g_median","id")
 green_b <- green_b[!duplicated(green_b$id),]
 RESP_params<-merge(RESP_params,green_b, by.x = "ID", by.y = "id")
 
-nir_b <- image_params[image_params$band=="proche IR",][,c(2:7)]
+nir_b <- image_params[image_params$band=="proche IR",][,c("min","max","mean","std","median","id")]
 names(nir_b) = c("nir_min","nir_max","nir_mean","nir_std", "nir_median","id")
 nir_b <- nir_b[!duplicated(nir_b$id),]
 RESP_params<-merge(RESP_params,nir_b, by.x = "ID", by.y = "id")
 
-ndvi_b <- image_params[image_params$band=="ndvi",][,c(2:7)]
+ndvi_b <- image_params[image_params$band=="ndvi",][,c("min","max","mean","std","median","id")]
 names(ndvi_b) = c("ndvi_min","ndvi_max","ndvi_mean","ndvi_std", "ndvi_median","id")
 ndvi_b <- ndvi_b[!duplicated(ndvi_b$id),]
 RESP_params<-merge(RESP_params,ndvi_b, by.x = "ID", by.y = "id")

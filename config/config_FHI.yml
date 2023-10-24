@@ -3,5 +3,5 @@ default:
  DIR_LAS: "02_intermediate/lidar_point_cloud/original/dft_outputs/"
  DIR_EXTENT: "02_intermediate/AOI/tiles/"
  NEED_EXTENT: TRUE
- RES_CELL: 2.5
+ RES_CELL: 5
  SIM_DIR: "02_intermediate/lidar_point_cloud/original/fhi_outputs/"
