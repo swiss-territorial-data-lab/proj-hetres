@@ -25,4 +25,5 @@ stats_per_tree.py:
     chm: 02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_chm.tif 
     tile_delimitation: 02_intermediate/AOI/AOI.shp
     beech_file: 02_intermediate/ground_truth/GT_3p0_poly.gpkg # 02_intermediate/lidar_point_cloud/original/fhi_outputs/mosaic_seg_params.shp #
+    beech_layer: all_trees
   output_directory: 02_intermediate/true_orthophoto/original/
