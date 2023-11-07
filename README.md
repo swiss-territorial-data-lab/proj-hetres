@@ -25,9 +25,9 @@ No specific requirements.
 ├── config                        # config files
 ├── scripts
    ├── data_preparation
-	  ├── downloadNDVIdiff.py     # download the yearly variation of NDVI from waldmonitoring.ch website	  
-	  ├── downsampleLAS.py        # downsample LiDAR point cloud by a factor 5   
-	  └── generateAOIvector.py    # generate extent for each tile and made a grid out of them.  
+      ├── downloadNDVIdiff.py     # download the yearly variation of NDVI from waldmonitoring.ch website	  
+      ├── downsampleLAS.py        # downsample LiDAR point cloud by a factor 5   
+      └── generateAOIvector.py    # generate extent for each tile and made a grid out of them.  
    ├── DFT                        # Digital Forestry Toolbox once downloaded
    ├── functions                  # set of functions used in R and python scripts
    ├── image_processing           # set of scripts for image processing
