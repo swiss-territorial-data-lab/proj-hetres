@@ -1,6 +1,6 @@
 # Automatic estimation of the health state for trees based on airborne imagery and LiDAR point cloud
 
-This project provides a suite of Python, R and Octave/Matlab scripts allowing the end-user to use machine learning to assess the health grade of trees based on orthophotos and a LiDAR point cloud. 
+This project provides a suite of Python, R and Octave/Matlab scripts allowing the end-user to use machine learning to assess the health state of trees based on orthophotos and a LiDAR point cloud. 
 
 ## Hardware requirements
 
@@ -27,19 +27,31 @@ No specific requirements.
    ├── data_preparation
 	  ├── downloadNDVIdiff.py     # download the yearly variation of NDVI from waldmonitoring.ch website	  
 	  ├── downsampleLAS.py        # downsample LiDAR point cloud by a factor 5   
-	  └── generateAOIvector.py    # generate extent SHP for each tile and an agregate grid made of them.  
+	  └── generateAOIvector.py    # generate extent for each tile and made a grid out of them.  
    ├── DFT                        # Digital Forestry Toolbox once downloaded
    ├── functions                  # set of functions used in R and python scripts
    ├── image_processing           # set of scripts for image processing
    ├── FHI_catalog.R              # descriptors computation from LiDAR point cloud
-   ├── RF.R                       # random Forest routine (dataset split, training, optimization, prediction)
-   ├── funPeaks.m                 # use functions from DFT to segment LiDAR point cloud
+   ├── RF.R                       # random forest routine (dataset split, training, optimization, prediction)
+   ├── funPeaks.m                 # use functions from DFT to segment the LiDAR point cloud
    ├── funPeaks_batch.m           # segment all the LAS files in a folder 
    └── mergeData_inpoly.R         # prepare descriptors and response variables table for RF  
 └── setup                         # utility to setup the environment
 ```
 
 ## Scripts and Procedure
+
+The following terminology will be used throughout this document:
+
+* **descriptors**: data processed so that it may describe health state of beech trees. 
+
+The following abbreviations are used:
+
+* **AOI**: area of interest
+
+* **GT**: ground truth
+
+* **RF**: random forest
 
 Scripts are run in combination with their hard-coded configuration files in the following order: 
 
@@ -54,17 +66,6 @@ Scripts are run in combination with their hard-coded configuration files in the 
 8. `mergeData_inpoly.R`
 9. `RF.R`
 
-The following terminology will be used throughout this document:
-
-* **descriptors**: data processed so that it may describe health state of beech trees. 
-
-The following abbreviations are used:
-
-* **AOI**: area of interest
-
-* **GT**: ground truth
-
-* **RF**: random forest
 
 ### Data preparation
 
@@ -77,13 +78,13 @@ python scripts/data_preparation/generateAOIvector.py
 python scripts/image_processing/calculate_ndvi.py
 ```
 1. Compute the NDVI images using the red and NIR bands,
-	* Before processing data check the band order in TIF file and that correct values are in indicated in line 17. 
-	* When processing original data indicate in the `config/config_ImPro.yaml` config file: 
+	* Before processing the data, check the band order in TIF file and that correct values are indicated in line 17. 
+	* When processing original data, indicate in the `config/config_ImPro.yaml` config file: 
 	```
 	ortho_directory: 01_initial/true_orthophoto/original/tiles
 	ndvi_directory: 02_intermediate/true_orthophoto/original/ndvi
 	```
-	* When processing downsampled data indicate in the `config/config_ImPro.yaml` config file: 
+	* When processing downsampled data, indicate in the `config/config_ImPro.yaml` config file: 
 	```
 	ortho_directory: 02_intermediate/true_orthophoto/downsampled/tiles
 	ndvi_directory: 02_intermediate/true_orthophoto/downsampled/ndvi
@@ -95,7 +96,7 @@ Those code lines perform the following tasks:
 
 1. The yearly NDVI differences are downloaded from waldmonitoring.ch. 
 2. The LiDAR point clouds are downsampled to have a similar density as the swisstopo product swissSURFACE3D.
-3. AOI tiling vector polygons based on input orthophoto tiles are generated.
+3. AOI tile polygons based on input orthophoto tiles are generated.
 4. The NDVI rasters corresponding to the aerial images are computed. 
 5. The true orthophoto tiles are downsampled to have a similar spatial resolution as the swisstopo product SWISSIMAGE RS.
 
@@ -149,7 +150,7 @@ python scripts/image_processing/stats_per_tree.py
 ```
 
 1. Compute the statistics (min, max, mean, median, std) per band for the GT trees,
-	* Don’t use the height filter, since the polygons are adjusted on the crown. 
+	* Don’t use the height filter, since the polygons are adjusted to the crown. 
 	* Specify parameters in  the `config/config_ImPro.yaml` config file: 
 	```
 	GT: true
@@ -184,7 +185,7 @@ To prepare the descriptors, train and optimize the model and make the prediction
 	* Change "original" for "downsampled" everywhere in `config/config_merge.yml`, to compute corresponding outputs for downgraded data. 
 	* Use the script `RF.R` to train, optimize and output vector with predictions for the segmented polygons. One can choose which descriptors have to be included in the RF model with the DESCRIPTORS parameter. Furthermore, threshold to apply on the votes fraction can be tweaked with the CUTOFF parameter. 
 	```
-	 DESCRIPTORS: "all" # all, NDVI_diff, VHI, Structural params, Stats&PCA, custom
+	 DESCRIPTORS: "all" # all, NDVI_diff, structural, stats, custom
 	 CUTOFF: [0.33,0.33,0.33] # [0.2, 0.2, 0.2, 0.2, 0.2] # [0.35,0.29,0.33] 
 	```
 
