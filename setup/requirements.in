@@ -12,3 +12,6 @@ requests
 scikit-learn
 tqdm
 owslib
+joblib
+multiprocessing
+threading

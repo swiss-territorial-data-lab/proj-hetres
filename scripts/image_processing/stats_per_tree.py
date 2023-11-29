@@ -8,18 +8,85 @@ import geopandas as gpd
 import pandas as pd
 from rasterstats import zonal_stats
 
+from joblib import Parallel, delayed
+import multiprocessing
+from threading import Lock
+
 sys.path.insert(1, 'scripts')
 import functions.fct_misc as fct_misc
 from functions.fct_stats import pca_procedure
 
+
+def doStatistics(beech):
+    beeches_stats_list=pd.DataFrame()
+    for band_num in BANDS.keys():
+        stats_rgb=zonal_stats(beech.geometry, beech.path_RGB, stats=calculated_stats,
+        band=band_num, nodata=9999)
+
+        stats_dict_rgb=stats_rgb[0]
+        if GT:
+            stats_dict_rgb['no_arbre']=beech.no_arbre
+            stats_dict_rgb['band']=BANDS[band_num]
+            stats_dict_rgb['health_status']=beech.etat_sanitaire
+            stats_dict_rgb['area']= beech.geometry.area                                           
+        else: 
+            stats_dict_rgb['segID']=beech.segID
+            stats_dict_rgb['band']=BANDS[band_num]
+            stats_dict_rgb['area']= beech.geometry.area        
+       
+        beeches_stats_list=beeches_stats_list.append(pd.DataFrame(stats_dict_rgb, index=[0]))
+    
+    stats_ndvi=zonal_stats(beech.geometry, beech.path_NDVI, stats=calculated_stats,
+        band=1, nodata=99999)
+    
+    stats_dict_ndvi=stats_ndvi[0]
+    if GT:
+        stats_dict_ndvi['no_arbre']=beech.no_arbre
+        stats_dict_ndvi['band']='ndvi'
+        stats_dict_ndvi['health_status']=beech.etat_sanitaire
+        stats_dict_ndvi['area']= beech.geometry.area                                           
+    else: 
+        stats_dict_ndvi['segID']=beech.segID    
+        stats_dict_ndvi['band']='ndvi'     
+        stats_dict_ndvi['area']= beech.geometry.area     
+                          
+    beeches_stats_list=beeches_stats_list.append(pd.DataFrame(stats_dict_ndvi, index=[0]))
+    
+    return beeches_stats_list
+
+def doMergeGT(no):
+    single_beeches_list=pd.DataFrame()
+    for band_num in CHANNELS.keys():
+        max_max = max(beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['max'])
+        min_min = min(beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['min'])
+        means = (beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['mean']).values
+        medians = (beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['median']).values
+        stds = (beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['std']).values
+        areas = (beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['area']).values
+        mean_wgtd = sum(means*areas)/sum(areas)
+        median_wgtd = sum(medians*areas)/sum(areas)
+        std_wgtd = sum(stds*areas)/sum(areas)
+
+        tmp = beeches_stats[beeches_stats.no_arbre==no].iloc[band_num-1:band_num]
+        tmp['min']=min_min
+        tmp['max']=max_max
+        tmp['mean']=mean_wgtd
+        tmp['median']=median_wgtd
+        tmp['std']=std_wgtd
+
+        single_beeches_list = single_beeches_list.append(tmp)
+
+    return single_beeches_list
+
+lock = Lock()
+
 logger=fct_misc.format_logger(logger)
 # warnings.filterwarnings("ignore",
 #                         message=".*The definition of projected CRS EPSG:2056 got from GeoTIFF keys is not the same as the one from the EPSG registry.*")
-
 logger.info('Starting...')
 
 logger.info(f"Using config.yaml as config file.")
-with open('config/config_ImPro.yaml') as fp:
+with open('config/config_ImPro_par.yaml') as fp:
         cfg = yaml.load(fp, Loader=yaml.FullLoader)['stats_per_tree.py']
 
 logger.info('Defining constants...')
@@ -89,71 +156,33 @@ clipped_beeches=clipped_beeches[(clipped_beeches.geom_type=='Polygon')|(clipped_
 
 
 logger.info('Getting the statistics of trees...')
-beeches_stats=pd.DataFrame()
 BANDS={1: 'rouge', 2: 'vert', 3: 'bleu', 4: 'proche IR'}
-CHANNELS={1: 'rouge', 2: 'vert', 3: 'bleu', 4: 'proche IR', 5:'ndvi'}                                                                    
+CHANNELS={1: 'rouge', 2: 'vert', 3: 'bleu', 4: 'proche IR',5:'ndvi'}                                                                    
 calculated_stats=['min', 'max', 'mean', 'median', 'std']
 
-for beech in tqdm(clipped_beeches.itertuples(),
-                  desc='Extracting statistics over beeches', total=clipped_beeches.shape[0]):
-    for band_num in BANDS.keys():
-        stats_rgb=zonal_stats(beech.geometry, beech.path_RGB, stats=calculated_stats,
-        band=band_num, nodata=9999)
+print("Multithreading with joblib for statistics over beeches: ")
+num_cores = multiprocessing.cpu_count()
+print ("starting job on {} cores.".format(num_cores))
 
-        stats_dict_rgb=stats_rgb[0]
-        if GT:
-            stats_dict_rgb['no_arbre']=beech.no_arbre
-            stats_dict_rgb['band']=BANDS[band_num]
-            stats_dict_rgb['health_status']=beech.etat_sanitaire
-            stats_dict_rgb['area']= beech.geometry.area                                           
-        else: 
-            stats_dict_rgb['segID']=beech.segID
-            stats_dict_rgb['band']=BANDS[band_num]
-            stats_dict_rgb['area']= beech.geometry.area        
-       
-        beeches_stats=pd.concat([beeches_stats, pd.DataFrame(stats_dict_rgb, index=[0])], ignore_index=True)
-    
-    stats_ndvi=zonal_stats(beech.geometry, beech.path_NDVI, stats=calculated_stats,
-        band=1, nodata=99999)
-    
-    stats_dict_ndvi=stats_ndvi[0]
-    if GT:
-        stats_dict_ndvi['no_arbre']=beech.no_arbre
-        stats_dict_ndvi['band']='ndvi'
-        stats_dict_ndvi['health_status']=beech.etat_sanitaire
-        stats_dict_ndvi['area']= beech.geometry.area                                           
-    else: 
-        stats_dict_ndvi['segID']=beech.segID    
-        stats_dict_ndvi['band']='ndvi'     
-        stats_dict_ndvi['area']= beech.geometry.area                           
+logger.info('Extracting statistics over beeches...')
+beeches_stats_list = Parallel(n_jobs=num_cores, prefer="threads")(delayed(doStatistics)(beech) for beech in clipped_beeches.itertuples())
 
-    beeches_stats=pd.concat([beeches_stats, pd.DataFrame(stats_dict_ndvi, index=[0])], ignore_index=True)
+beeches_stats=pd.DataFrame()
+for row in beeches_stats_list:
+    beeches_stats = beeches_stats.append(row, ignore_index=True)
+logger.info('... finished')
 
-
-single_beeches = pd.DataFrame()
 if GT:
-    for no in tqdm(beeches_stats.no_arbre.unique(),
-                    desc='Merging double no_arbre', total=beeches_stats.shape[0]):
-        for band_num in CHANNELS.keys():
-            max_max = max(beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['max'])
-            min_min = min(beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['min'])
-            means = (beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['mean']).values
-            medians = (beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['median']).values
-            stds = (beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['std']).values
-            areas = (beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['area']).values
-            mean_wgtd = sum(means*areas)/sum(areas)
-            median_wgtd = sum(medians*areas)/sum(areas)
-            std_wgtd = sum(stds*areas)/sum(areas)
+    logger.info('Merging double no_arbre...')
+    single_beeches_list = Parallel(n_jobs=num_cores, prefer="threads")(delayed(doMergeGT)(no) for no in list(beeches_stats.no_arbre.unique()))
 
-            tmp = beeches_stats[beeches_stats.no_arbre==no].iloc[band_num-1:band_num]
-            tmp['min']=min_min
-            tmp['max']=max_max
-            tmp['mean']=mean_wgtd
-            tmp['median']=median_wgtd
-            tmp['std']=std_wgtd
-            single_beeches = pd.concat([single_beeches, pd.DataFrame(tmp)], ignore_index=True)
+    single_beeches=pd.DataFrame()
+    for row in single_beeches_list:
+        single_beeches = single_beeches.append(row, ignore_index=True)
+    logger.info('... finished.')
+
     single_beeches.drop(columns=['area'])
-    beeches_stats  = single_beeches
+    beeches_stats = single_beeches
     del single_beeches
 
 rounded_stats=beeches_stats.copy()
@@ -207,8 +236,3 @@ for band in beeches_stats['band'].unique():
 
     written_files.extend(written_files_pca_pixels)
 
-
-
-logger.success('Some files were written:')
-for file in written_files:
-    print(file)
