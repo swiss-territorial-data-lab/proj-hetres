@@ -7,7 +7,6 @@ from loguru import logger
 import geopandas as gpd
 import pandas as pd
 from rasterstats import zonal_stats
-from shapely.ops import unary_union
 
 sys.path.insert(1, 'scripts')
 import functions.fct_misc as fct_misc
@@ -85,8 +84,9 @@ else:
 
 clipped_beeches=fct_misc.clip_labels(correct_high_beeches, tiles)
 
-
 clipped_beeches=clipped_beeches[~clipped_beeches.is_empty]
+clipped_beeches=clipped_beeches[(clipped_beeches.geom_type=='Polygon')|(clipped_beeches.geom_type=='Multipolygon')]
+
 
 logger.info('Getting the statistics of trees...')
 beeches_stats=pd.DataFrame()
@@ -145,12 +145,6 @@ if GT:
             median_wgtd = sum(medians*areas)/sum(areas)
             std_wgtd = sum(stds*areas)/sum(areas)
 
-            tmp=stats_ndvi[0]
-            tmp['no_arbre']=beech.no_arbre
-            tmp['band']=band_num
-            tmp['health_status']=beech.etat_sanitaire
-            tmp['area']= beech.geometry.area
-
             tmp = beeches_stats[beeches_stats.no_arbre==no].iloc[band_num-1:band_num]
             tmp['min']=min_min
             tmp['max']=max_max
@@ -158,36 +152,9 @@ if GT:
             tmp['median']=median_wgtd
             tmp['std']=std_wgtd
             single_beeches = pd.concat([single_beeches, pd.DataFrame(tmp)], ignore_index=True)
-else:
-    for no in tqdm(beeches_stats.segID.unique(),
-                    desc='Merging double segID', total=beeches_stats.shape[0]):
-        for band_num in CHANNELS.keys():
-            max_max = max(beeches_stats.loc[(beeches_stats['segID']==no) & (beeches_stats['band']==CHANNELS[band_num])]['max'])
-            min_min = min(beeches_stats.loc[(beeches_stats['segID']==no) & (beeches_stats['band']==CHANNELS[band_num])]['min'])
-            means = (beeches_stats.loc[(beeches_stats['segID']==no) & (beeches_stats['band']==CHANNELS[band_num])]['mean']).values
-            medians = (beeches_stats.loc[(beeches_stats['segID']==no) & (beeches_stats['band']==CHANNELS[band_num])]['median']).values
-            stds = (beeches_stats.loc[(beeches_stats['segID']==no) & (beeches_stats['band']==CHANNELS[band_num])]['std']).values
-            areas = (beeches_stats.loc[(beeches_stats['segID']==no) & (beeches_stats['band']==CHANNELS[band_num])]['area']).values
-            mean_wgtd = sum(means*areas)/sum(areas)
-            median_wgtd = sum(medians*areas)/sum(areas)
-            std_wgtd = sum(stds*areas)/sum(areas)
-
-            tmp=stats_ndvi[0]
-            tmp['segID']=beech.segID
-            tmp['band']=band_num
-            tmp['area']= beech.geometry.area
-
-            tmp = beeches_stats[beeches_stats.segID==no].iloc[band_num-1:band_num]
-            tmp['min']=min_min
-            tmp['max']=max_max
-            tmp['mean']=mean_wgtd
-            tmp['median']=median_wgtd
-            tmp['std']=std_wgtd
-            single_beeches = pd.concat([single_beeches, pd.DataFrame(tmp)], ignore_index=True)
-
-single_beeches.drop(columns=['area'])
-beeches_stats  = single_beeches
-del single_beeches
+    single_beeches.drop(columns=['area'])
+    beeches_stats  = single_beeches
+    del single_beeches
 
 rounded_stats=beeches_stats.copy()
 cols=['min', 'max', 'median', 'mean', 'std']

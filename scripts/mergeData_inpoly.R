@@ -90,7 +90,11 @@ RESP_params<-as.data.frame(RESP_params)
 
 ## Stats and PCA coordinates from aerial imagery
 image_params <- read.csv(paste0(SIM_STATS,"beech_stats.csv"))
-names(image_params)<-c("X","min","max","mean","std","median","id","band","health_status","area")
+if (TRAIN){
+  names(image_params)<-c("X","min","max","mean","std","median","id","band","health_status","area")
+}else{
+  names(image_params)<-c("X","min","max","mean","std","median","id","band","area")}
+
 
 blue_b <- image_params[image_params$band=="bleu",][,c("min","max","mean","std","median","id")]
 names(blue_b) = c("b_min","b_max","b_mean","b_std", "b_median","id")

@@ -41,7 +41,7 @@ setwd(WORKING_DIR)
 
 ### Dataset for Random Forest ###
 data_all <- read.csv(paste0(RF_DIR,"all_desc_GT_nohf_poly.csv"))
-data_topredict <- read.csv(paste0(RF_DIR,"all_desc_seg_nohf_poly.csv"))
+data_topredict <- read.csv(paste0(RF_DIR,"all_desc_seg_hf_poly.csv"))
 
 ## Choose descriptors ##
 data = switch(  
@@ -59,13 +59,13 @@ data = switch(
 data_topredict <-na.omit(data_topredict)
 data_topredict <- switch(
   DESC,  
-  "all"= data_all[,c("ID","CLASS_SAN","zq99_seg","alpha_seg","beta_seg","cvlad_seg","vci_seg","i_mean_seg","i_sd_seg","CC","sdcc","sdchm","agl",
+  "all"= data_topredict[,c("ID","CLASS_SAN","zq99_seg","alpha_seg","beta_seg","cvlad_seg","vci_seg","i_mean_seg","i_sd_seg","CC","sdcc","sdchm","agl",
                      "NDVI_diff_1615","NDVI_diff_1716","NDVI_diff_1817","NDVI_diff_1918","NDVI_diff_2019","NDVI_diff_2120","NDVI_diff_2221",
                      "b_min","b_max","b_mean","b_std","b_median","r_min","r_max","r_mean","r_std","r_median","g_min","g_max","g_mean","g_std","g_median","nir_min","nir_max","nir_mean",
                      "nir_std","nir_median","ndvi_min","ndvi_max","ndvi_mean","ndvi_std","ndvi_median")],
-  "NDVI_diff" = data_all[,c("ID","CLASS_SAN","NDVI_diff_1615","NDVI_diff_1716","NDVI_diff_1817","NDVI_diff_1918","NDVI_diff_2019","NDVI_diff_2120","NDVI_diff_2221")], 
-  "structural" = data_all[,c("ID","CLASS_SAN","zq99_seg","alpha_seg","beta_seg","cvlad_seg","vci_seg","i_mean_seg","i_sd_seg","CC","sdcc","sdchm","agl")],
-  "stats" = data_all[,c("ID","CLASS_SAN","b_min","b_max","b_mean","b_std","b_median","r_min","r_max","r_mean","r_std","r_median","g_min","g_max","g_mean","g_std","g_median",
+  "NDVI_diff" = data_topredict[,c("ID","CLASS_SAN","NDVI_diff_1615","NDVI_diff_1716","NDVI_diff_1817","NDVI_diff_1918","NDVI_diff_2019","NDVI_diff_2120","NDVI_diff_2221")], 
+  "structural" = data_topredict[,c("ID","CLASS_SAN","zq99_seg","alpha_seg","beta_seg","cvlad_seg","vci_seg","i_mean_seg","i_sd_seg","CC","sdcc","sdchm","agl")],
+  "stats" = data_topredict[,c("ID","CLASS_SAN","b_min","b_max","b_mean","b_std","b_median","r_min","r_max","r_mean","r_std","r_median","g_min","g_max","g_mean","g_std","g_median",
                         "nir_min","nir_max","nir_mean","nir_std","nir_median","ndvi_min","ndvi_max","ndvi_mean","ndvi_std","ndvi_median")]
 )
 
