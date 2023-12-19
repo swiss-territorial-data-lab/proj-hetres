@@ -37,10 +37,6 @@ BEECHES_POLYGONS=INPUTS['beech_file']
 BEECHES_LAYER=INPUTS['beech_layer']
 
 ORIGINAL_ORTHO=cfg['original_ortho']
-# if 'original_ortho' in cfg.keys():
-#     ORIGINAL_ORTHO=True
-# else:
-#     ORIGINAL_ORTHO=False
 
 os.chdir(WORKING_DIR)
 written_files=[]

@@ -27,15 +27,14 @@ fct_misc.ensure_dir_exists("02_intermediate/AOI/tiles")
 
 ################################################################################
 
-def main(PATH_IN, files_name):
+def main(path_in, files_name):
     
     aoi_merge=gpd.GeoDataFrame()
     for _name in files_name:
 
-        _tif = os.path.join(PATH_IN, _name)
+        _tif = os.path.join(path_in, _name)
 
         with rasterio.open(_tif) as src:
-            image=src.read(1)
             gdf = gpd.GeoDataFrame.from_features(dataset_features(src, bidx=2, as_mask=True, geographic=False, band=False))
             gdf.set_crs(crs=src.crs, inplace=True)
             gdf.filename=_name.replace('.tif', '')

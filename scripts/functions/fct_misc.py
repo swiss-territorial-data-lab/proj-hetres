@@ -90,7 +90,6 @@ def get_pixel_values(geoms, tile, bands = range(1,4), pixel_values = pd.DataFram
 
         # extract the the valid values
         val = np.extract(data != no_data, data)
-        # val = np.extract(~data.mask, data.data)
 
         dico[f'band{band}']=val
         length_bands.append(len(val))
@@ -224,7 +223,7 @@ def polygonize_binary_raster(path):
     return gdf
 
 
-def clip_labels(labels_gdf, tiles_gdf, fact=0.99):
+def clip_labels(labels_gdf, tiles_gdf, fact=1):
     '''
     Clip the labels to the tiles
     Copied from the misc functions of the object detector 
@@ -259,27 +258,27 @@ def clip_labels(labels_gdf, tiles_gdf, fact=0.99):
 
     return clipped_labels_gdf
 
-def get_ortho_tiles(tiles, FOLDER_PATH_IN, FOLDER_PATH_OUT, WORKING_DIR=None):
+def get_ortho_tiles(tiles, folder_path_in, folder_path_out, working_dir=None):
     '''
     Get the true orthorectified tiles and the corresponding NDVI file based on the tile name.
 
     - tiles: dataframe of with the delimitation and the id of the file.
-    - PATH_ORIGINAL: path to the original tiles
-    - PATH_NDVI: path to the NDVI tiles
-    - WORKING_DIR: working directory to be set (if needed)
+    - folder_path_in: path to the original tiles
+    - folder_path_out: path to the NDVI tiles
+    - working_dir: working directory to be set (if needed)
     return: the tile dataframe with an additional field with the path to each file.
     '''
 
-    if WORKING_DIR:
-        os.chdir(WORKING_DIR)
+    if working_dir:
+        os.chdir(working_dir)
 
     rgb_pathes=[]
     ndvi_pathes=[]
 
     for tile_name in tiles['NAME'].values:
                                        
-        rgb_pathes.append(os.path.join(FOLDER_PATH_IN, tile_name + '.tif'))
-        ndvi_pathes.append(os.path.join(FOLDER_PATH_OUT, tile_name + '_NDVI.tif'))
+        rgb_pathes.append(os.path.join(folder_path_in, tile_name + '.tif'))
+        ndvi_pathes.append(os.path.join(folder_path_out, tile_name + '_NDVI.tif'))
 
                
     tiles['path_RGB']=rgb_pathes

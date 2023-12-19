@@ -17,7 +17,7 @@ import functions.fct_misc as fct_misc
 from functions.fct_stats import pca_procedure
 
 
-def doStatistics(beech):
+def do_statistics(beech):
     beeches_stats_list=pd.DataFrame()
     for band_num in BANDS.keys():
         stats_rgb=zonal_stats(beech.geometry, beech.path_RGB, stats=calculated_stats,
@@ -54,7 +54,7 @@ def doStatistics(beech):
     
     return beeches_stats_list
 
-def doMergeGT(no):
+def do_merge_gt(no):
     single_beeches_list=pd.DataFrame()
     for band_num in CHANNELS.keys():
         max_max = max(beeches_stats.loc[(beeches_stats['no_arbre']==no) & (beeches_stats['band']==CHANNELS[band_num])]['max'])
@@ -86,7 +86,7 @@ logger=fct_misc.format_logger(logger)
 logger.info('Starting...')
 
 logger.info(f"Using config.yaml as config file.")
-with open('config/config_ImPro_par.yaml') as fp:
+with open('config/config_ImPro.yaml') as fp:
         cfg = yaml.load(fp, Loader=yaml.FullLoader)['stats_per_tree.py']
 
 logger.info('Defining constants...')
@@ -115,8 +115,8 @@ if GT:
     table_path=fct_misc.ensure_dir_exists(os.path.join(OUTPUT_DIR,'tables/gt'))
     im_path=fct_misc.ensure_dir_exists(os.path.join(OUTPUT_DIR,'images/gt'))
 else:
-    table_path=fct_misc.ensure_dir_exists(os.path.join(OUTPUT_DIR,'tables/seg'))
-    im_path=fct_misc.ensure_dir_exists(os.path.join(OUTPUT_DIR,'images/seg'))
+    table_path=fct_misc.ensure_dir_exists(os.path.join(OUTPUT_DIR,'tables/nohf'))
+    im_path=fct_misc.ensure_dir_exists(os.path.join(OUTPUT_DIR,'images/nohf'))
 logger.info('Reading files...')
 
 if GT:
@@ -165,7 +165,7 @@ num_cores = multiprocessing.cpu_count()
 print ("starting job on {} cores.".format(num_cores))
 
 logger.info('Extracting statistics over beeches...')
-beeches_stats_list = Parallel(n_jobs=num_cores, prefer="threads")(delayed(doStatistics)(beech) for beech in clipped_beeches.itertuples())
+beeches_stats_list = Parallel(n_jobs=num_cores, prefer="threads")(delayed(do_statistics)(beech) for beech in clipped_beeches.itertuples())
 
 beeches_stats=pd.DataFrame()
 for row in beeches_stats_list:
@@ -174,7 +174,7 @@ logger.info('... finished')
 
 if GT:
     logger.info('Merging double no_arbre...')
-    single_beeches_list = Parallel(n_jobs=num_cores, prefer="threads")(delayed(doMergeGT)(no) for no in list(beeches_stats.no_arbre.unique()))
+    single_beeches_list = Parallel(n_jobs=num_cores, prefer="threads")(delayed(do_merge_gt)(no) for no in list(beeches_stats.no_arbre.unique()))
 
     single_beeches=pd.DataFrame()
     for row in single_beeches_list:
