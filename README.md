@@ -192,7 +192,7 @@ To prepare the descriptors, train and optimize the model and make the prediction
 ## Addendum
 
 ### Documentation
-The full documentation of the project is available on the STDL's technical website: **give link here...**
+The full documentation of the project is available on the [STDL's technical website](https://tech.stdl.ch/PROJ-HETRES/).
 
 ### Data 
 
