@@ -23,7 +23,7 @@ No specific requirements.
 
 ```
 ├── config                        # config files
-├── scripts
+├── scripts                       #
    ├── data_preparation
       ├── downloadNDVIdiff.py     # download the yearly variation of NDVI from waldmonitoring.ch website	  
       ├── downsampleLAS.py        # downsample LiDAR point cloud by a factor 5   
